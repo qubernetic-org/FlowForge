@@ -8,4 +8,5 @@ public record DeployRequestDto
     public Guid ProjectId { get; init; }
     public string TargetAmsNetId { get; init; } = string.Empty;
     public string? ApproverId { get; init; }
+    public int AdsPort { get; init; } = 851;
 }

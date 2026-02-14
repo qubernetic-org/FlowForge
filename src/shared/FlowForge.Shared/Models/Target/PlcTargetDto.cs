@@ -1,6 +1,8 @@
 // Copyright (c) 2026 Qubernetic (Biró, Csaba Attila)
 // SPDX-License-Identifier: AGPL-3.0-or-later
 
+using FlowForge.Shared.Models.Ads;
+
 namespace FlowForge.Shared.Models.Target;
 
 public record PlcTargetDto
@@ -13,4 +15,5 @@ public record PlcTargetDto
     public Guid? GroupId { get; init; }
     public bool IsProductionTarget { get; init; }
     public bool DeployLocked { get; init; }
+    public PlcAdsState? CurrentState { get; init; }
 }
