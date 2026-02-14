@@ -26,7 +26,7 @@ jobs:
         with:
           path-to-signatures: "signatures/cla.json"
           path-to-document: "https://gist.github.com/q-soriarty/615e916cd19a34f5f1efa1110592b32a"
-          branch: "develop"
+          branch: "cla-signatures"
           allowlist: "dependabot[bot],github-actions[bot]"
           custom-notsigned-prcomment: |
             Thank you for your contribution! Before we can merge this PR, you need to sign our [Contributor License Agreement](https://gist.github.com/q-soriarty/615e916cd19a34f5f1efa1110592b32a).
