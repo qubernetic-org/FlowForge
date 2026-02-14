@@ -6,7 +6,8 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <RootNamespace>FlowForge.BuildServer</RootNamespace>
     <OutputType>Exe</OutputType>
-    <PlatformTarget>x86</PlatformTarget>
+    <!-- TODO: Set PlatformTarget to x86 when COM references (EnvDTE, TCatSysManagerLib) are added -->
+    <!-- <PlatformTarget>x86</PlatformTarget> -->
   </PropertyGroup>
 
   <ItemGroup>
