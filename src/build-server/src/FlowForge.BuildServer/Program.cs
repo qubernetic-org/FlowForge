@@ -4,6 +4,7 @@
 using FlowForge.BuildServer;
 using FlowForge.BuildServer.Configuration;
 using FlowForge.BuildServer.Services;
+using FlowForge.BuildServer.TwinCat;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -21,6 +22,11 @@ builder.Services.AddHttpClient<BuildJobClient>(client =>
     var backendUrl = builder.Configuration["BuildServer:BackendApiUrl"] ?? "http://localhost:5000";
     client.BaseAddress = new Uri(backendUrl);
 });
+
+// ---------------------------------------------------------------------------
+// ADS deploy client (direct ADS via native TwinCAT router — see doc/ADS_INTEGRATION.md)
+// ---------------------------------------------------------------------------
+builder.Services.AddTransient<IAdsDeployClient, AdsDeployClient>();
 
 // ---------------------------------------------------------------------------
 // Background worker (build job polling)
