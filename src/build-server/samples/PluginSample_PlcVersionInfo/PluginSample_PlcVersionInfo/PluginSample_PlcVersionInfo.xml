@@ -1,0 +1,199 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>PluginSample_PlcVersionInfo</name>
+    </assembly>
+    <members>
+        <member name="T:PluginSample_PlcVersionInfo.Connect">
+            <summary>The object for implementing an Add-in.</summary>
+            <seealso class='IDTExtensibility2' />
+        </member>
+        <member name="M:PluginSample_PlcVersionInfo.Connect.#ctor">
+            <summary>Implements the constructor for the Add-in object. Place your initialization code within this method.</summary>
+        </member>
+        <member name="M:PluginSample_PlcVersionInfo.Connect.OnConnection(System.Object,Extensibility.ext_ConnectMode,System.Object,System.Array@)">
+            <summary>Implements the OnConnection method of the IDTExtensibility2 interface. Receives notification that the Add-in is being loaded.</summary>
+            <param term='application'>Root object of the host application.</param>
+            <param term='connectMode'>Describes how the Add-in is being loaded.</param>
+            <param term='addInInst'>Object representing this Add-in.</param>
+            <seealso class='IDTExtensibility2' />
+        </member>
+        <member name="M:PluginSample_PlcVersionInfo.Connect.OnDisconnection(Extensibility.ext_DisconnectMode,System.Array@)">
+            <summary>Implements the OnDisconnection method of the IDTExtensibility2 interface. Receives notification that the Add-in is being unloaded.</summary>
+            <param term='disconnectMode'>Describes how the Add-in is being unloaded.</param>
+            <param term='custom'>Array of parameters that are host application specific.</param>
+            <seealso class='IDTExtensibility2' />
+        </member>
+        <member name="M:PluginSample_PlcVersionInfo.Connect.OnAddInsUpdate(System.Array@)">
+            <summary>Implements the OnAddInsUpdate method of the IDTExtensibility2 interface. Receives notification when the collection of Add-ins has changed.</summary>
+            <param term='custom'>Array of parameters that are host application specific.</param>
+            <seealso class='IDTExtensibility2' />		
+        </member>
+        <member name="M:PluginSample_PlcVersionInfo.Connect.OnStartupComplete(System.Array@)">
+            <summary>Implements the OnStartupComplete method of the IDTExtensibility2 interface. Receives notification that the host application has completed loading.</summary>
+            <param term='custom'>Array of parameters that are host application specific.</param>
+            <seealso class='IDTExtensibility2' />
+        </member>
+        <member name="M:PluginSample_PlcVersionInfo.Connect.OnBeginShutdown(System.Array@)">
+            <summary>Implements the OnBeginShutdown method of the IDTExtensibility2 interface. Receives notification that the host application is being unloaded.</summary>
+            <param term='custom'>Array of parameters that are host application specific.</param>
+            <seealso class='IDTExtensibility2' />
+        </member>
+        <member name="M:PluginSample_PlcVersionInfo.Connect.QueryStatus(System.String,EnvDTE.vsCommandStatusTextWanted,EnvDTE.vsCommandStatus@,System.Object@)">
+            <summary>Implements the QueryStatus method of the IDTCommandTarget interface. This is called when the command's availability is updated</summary>
+            <param term='commandName'>The name of the command to determine state for.</param>
+            <param term='neededText'>Text that is needed for the command.</param>
+            <param term='status'>The state of the command in the user interface.</param>
+            <param term='commandText'>Text requested by the neededText parameter.</param>
+            <seealso class='Exec' />
+        </member>
+        <member name="M:PluginSample_PlcVersionInfo.Connect.Exec(System.String,EnvDTE.vsCommandExecOption,System.Object@,System.Object@,System.Boolean@)">
+            <summary>Implements the Exec method of the IDTCommandTarget interface. This is called when the command is invoked.</summary>
+            <param term='commandName'>The name of the command to execute.</param>
+            <param term='executeOption'>Describes how the command should be run.</param>
+            <param term='varIn'>Parameters passed from the caller to the command handler.</param>
+            <param term='varOut'>Parameters passed from the command handler to the caller.</param>
+            <param term='handled'>Informs the caller if the command was handled or not.</param>
+            <seealso class='Exec' />
+        </member>
+        <member name="M:PluginSample_PlcVersionInfo.Connect.ActivateNewTestSequence">
+            <summary>Starts UI.</summary>
+            <seealso class='ActivateTestSequence' />
+        </member>
+        <member name="M:PluginSample_PlcVersionInfo.Connect.ShowText(PluginSample_PlcVersionInfo.VersionInfo,System.EventArgs)">
+            <summary>Implements TwinCAT Automation Interface to attach to current solution and get/set version information of all POUs</summary>
+        </member>
+        <member name="T:PluginSample_PlcVersionInfo.IOleMessageFilter">
+            <summary>
+            Definition of the IOleMessageFilter interface
+            </summary>
+        </member>
+        <member name="M:PluginSample_PlcVersionInfo.IOleMessageFilter.HandleInComingCall(System.Int32,System.IntPtr,System.Int32,System.IntPtr)">
+            <summary>
+            Handles the in coming call.
+            </summary>
+            <param name="dwCallType">Type of the dw call.</param>
+            <param name="hTaskCaller">The h task caller.</param>
+            <param name="dwTickCount">The dw tick count.</param>
+            <param name="lpInterfaceInfo">The lp interface info.</param>
+            <returns></returns>
+        </member>
+        <member name="M:PluginSample_PlcVersionInfo.IOleMessageFilter.RetryRejectedCall(System.IntPtr,System.Int32,System.Int32)">
+            <summary>
+            Retries the rejected call.
+            </summary>
+            <param name="hTaskCallee">The h task callee.</param>
+            <param name="dwTickCount">The dw tick count.</param>
+            <param name="dwRejectType">Type of the dw reject.</param>
+            <returns></returns>
+        </member>
+        <member name="M:PluginSample_PlcVersionInfo.IOleMessageFilter.MessagePending(System.IntPtr,System.Int32,System.Int32)">
+            <summary>
+            Messages the pending.
+            </summary>
+            <param name="hTaskCallee">The h task callee.</param>
+            <param name="dwTickCount">The dw tick count.</param>
+            <param name="dwPendingType">Type of the dw pending.</param>
+            <returns></returns>
+        </member>
+        <member name="M:PluginSample_PlcVersionInfo.MessageFilter.Register">
+            <summary>
+            Start the filter
+            </summary>
+        </member>
+        <member name="M:PluginSample_PlcVersionInfo.MessageFilter.Revoke">
+            <summary>
+            Done with the filter, close it.
+            </summary>
+        </member>
+        <member name="M:PluginSample_PlcVersionInfo.MessageFilter.PluginSample_PlcVersionInfo#IOleMessageFilter#HandleInComingCall(System.Int32,System.IntPtr,System.Int32,System.IntPtr)">
+            <summary>
+            Handles the in coming thread requests.
+            </summary>
+            <param name="dwCallType">Type of the dw call.</param>
+            <param name="hTaskCaller">The h task caller.</param>
+            <param name="dwTickCount">The dw tick count.</param>
+            <param name="lpInterfaceInfo">The lp interface info.</param>
+            <returns></returns>
+        </member>
+        <member name="M:PluginSample_PlcVersionInfo.MessageFilter.PluginSample_PlcVersionInfo#IOleMessageFilter#RetryRejectedCall(System.IntPtr,System.Int32,System.Int32)">
+            <summary>
+            Retries the rejected call.
+            </summary>
+            <param name="hTaskCallee">The h task callee.</param>
+            <param name="dwTickCount">The dw tick count.</param>
+            <param name="dwRejectType">Type of the dw reject.</param>
+            <returns></returns>
+        </member>
+        <member name="M:PluginSample_PlcVersionInfo.MessageFilter.PluginSample_PlcVersionInfo#IOleMessageFilter#MessagePending(System.IntPtr,System.Int32,System.Int32)">
+            <summary>
+            
+            </summary>
+            <param name="hTaskCallee">The h task callee.</param>
+            <param name="dwTickCount">The dw tick count.</param>
+            <param name="dwPendingType">Type of the dw pending.</param>
+            <returns></returns>
+        </member>
+        <member name="T:PluginSample_PlcVersionInfo.Properties.Resources">
+            <summary>
+              A strongly-typed resource class, for looking up localized strings, etc.
+            </summary>
+        </member>
+        <member name="P:PluginSample_PlcVersionInfo.Properties.Resources.ResourceManager">
+            <summary>
+              Returns the cached ResourceManager instance used by this class.
+            </summary>
+        </member>
+        <member name="P:PluginSample_PlcVersionInfo.Properties.Resources.Culture">
+            <summary>
+              Overrides the current thread's CurrentUICulture property for all
+              resource lookups using this strongly typed resource class.
+            </summary>
+        </member>
+        <member name="P:PluginSample_PlcVersionInfo.Properties.Resources.pictureBox1_Image">
+            <summary>
+              Looks up a localized resource of type System.Drawing.Bitmap.
+            </summary>
+        </member>
+        <member name="F:PluginSample_PlcVersionInfo.VersionInfo.e">
+            <summary>Event arg</summary>
+        </member>
+        <member name="M:PluginSample_PlcVersionInfo.VersionInfo.#ctor">
+            <summary>Constructor.</summary>
+        </member>
+        <member name="M:PluginSample_PlcVersionInfo.VersionInfo.clearControls">
+            <summary>
+            Clears the controls.
+            </summary>
+        </member>
+        <member name="F:PluginSample_PlcVersionInfo.VersionInfo.components">
+            <summary>
+            Required designer variable.
+            </summary>
+        </member>
+        <member name="M:PluginSample_PlcVersionInfo.VersionInfo.Dispose(System.Boolean)">
+            <summary>
+            Clean up any resources being used.
+            </summary>
+            <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+        </member>
+        <member name="M:PluginSample_PlcVersionInfo.VersionInfo.InitializeComponent">
+            <summary>
+            Required method for Designer support - do not modify
+            the contents of this method with the code editor.
+            </summary>
+        </member>
+        <member name="E:PluginSample_PlcVersionInfo.VersionInfo.WriteConfirm">
+            <summary>Click event handling.</summary>
+        </member>
+        <member name="P:PluginSample_PlcVersionInfo.VersionInfo.InfoVersion">
+            <summary>Version number of POUs.</summary>
+        </member>
+        <member name="P:PluginSample_PlcVersionInfo.VersionInfo.InfoAuthor">
+            <summary>Author of POUs.</summary>
+        </member>
+        <member name="T:PluginSample_PlcVersionInfo.VersionInfo.ClickHandler">
+            <summary>Delegate for listening/subscribing</summary>
+        </member>
+    </members>
+</doc>
