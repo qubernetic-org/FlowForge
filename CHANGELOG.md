@@ -40,6 +40,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 - Bump `actions/checkout` from v4 to v6 in CI workflow
 - Bump `actions/setup-node` from v4 to v6 in CI workflow
+- Bump `@commitlint/config-conventional` from 19.8.1 to 20.4.1
 
 ### Deprecated
 - Nothing yet
