@@ -3,6 +3,7 @@
 
 import { Handle, Position } from "@xyflow/react";
 import type { NodeOnlineData } from "../../../api/types";
+import { getPortColor } from "../utils/portColors";
 
 interface CounterNodeData {
   label?: string;
@@ -27,7 +28,7 @@ export function CounterNode({ data }: { data: CounterNodeData }) {
       <div className="ff-node-header">{data.label ?? "Counter"}</div>
       <div className="ff-node-body">
         <div className="ff-port ff-port-input">
-          <Handle type="target" position={Position.Left} id="CU" />
+          <Handle type="target" position={Position.Left} id="CU" style={{ background: getPortColor("BOOL") }} />
           <span className="ff-port-label">CU</span>
           {cuVar && (
             <span className="ff-port-value">{String(cuVar.value)}</span>
@@ -38,7 +39,7 @@ export function CounterNode({ data }: { data: CounterNodeData }) {
             type="target"
             position={Position.Left}
             id="RESET"
-            style={{ top: "50%" }}
+            style={{ top: "50%", background: getPortColor("BOOL") }}
           />
           <span className="ff-port-label">RESET</span>
           {resetVar && (
@@ -50,7 +51,7 @@ export function CounterNode({ data }: { data: CounterNodeData }) {
             type="target"
             position={Position.Left}
             id="PV"
-            style={{ top: "70%" }}
+            style={{ top: "70%", background: getPortColor("INT") }}
           />
           <span className="ff-port-label">PV</span>
           {pvVar && (
@@ -62,7 +63,7 @@ export function CounterNode({ data }: { data: CounterNodeData }) {
           {qVar && (
             <span className="ff-port-value">{String(qVar.value)}</span>
           )}
-          <Handle type="source" position={Position.Right} id="Q" />
+          <Handle type="source" position={Position.Right} id="Q" style={{ background: getPortColor("BOOL") }} />
         </div>
         <div className="ff-port ff-port-output">
           <span className="ff-port-label">CV</span>
@@ -73,7 +74,7 @@ export function CounterNode({ data }: { data: CounterNodeData }) {
             type="source"
             position={Position.Right}
             id="CV"
-            style={{ top: "60%" }}
+            style={{ top: "60%", background: getPortColor("INT") }}
           />
         </div>
       </div>

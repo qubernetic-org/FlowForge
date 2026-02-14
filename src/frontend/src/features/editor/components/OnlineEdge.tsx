@@ -7,10 +7,12 @@ import {
   EdgeLabelRenderer,
   type EdgeProps,
 } from "@xyflow/react";
+import { getPortColor } from "../utils/portColors";
 
 interface OnlineEdgeData {
   isOnline?: boolean;
   value?: unknown;
+  portType?: string;
   [key: string]: unknown;
 }
 
@@ -37,13 +39,17 @@ export function OnlineEdge({
   const edgeData = data as OnlineEdgeData | undefined;
   const isOnline = edgeData?.isOnline ?? false;
   const value = edgeData?.value;
+  const portType = edgeData?.portType ?? "DEFAULT";
   const isActive = isOnline && Boolean(value);
 
-  const edgeClass = !isOnline
-    ? "ff-edge-offline"
-    : isActive
-      ? "ff-edge-active"
-      : "ff-edge-online";
+  const strokeColor = getPortColor(portType);
+  const edgeStyle: React.CSSProperties = {
+    stroke: strokeColor,
+    strokeWidth: isActive ? 2.5 : 2,
+    filter: isActive
+      ? `drop-shadow(0 0 4px ${strokeColor}80) drop-shadow(0 0 8px ${strokeColor}40)`
+      : undefined,
+  };
 
   return (
     <>
@@ -51,7 +57,7 @@ export function OnlineEdge({
         id={id}
         path={edgePath}
         markerEnd={markerEnd}
-        className={edgeClass}
+        style={edgeStyle}
       />
       {isOnline && value !== undefined && (
         <EdgeLabelRenderer>

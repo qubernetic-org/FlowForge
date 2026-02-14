@@ -3,6 +3,7 @@
 
 import { Handle, Position } from "@xyflow/react";
 import type { NodeOnlineData } from "../../../api/types";
+import { getPortColor } from "../utils/portColors";
 
 interface ComparisonNodeData {
   label?: string;
@@ -28,7 +29,7 @@ export function ComparisonNode({ data }: { data: ComparisonNodeData }) {
       </div>
       <div className="ff-node-body">
         <div className="ff-port ff-port-input">
-          <Handle type="target" position={Position.Left} id="A" />
+          <Handle type="target" position={Position.Left} id="A" style={{ background: getPortColor("INT") }} />
           <span className="ff-port-label">A</span>
           {aVar && (
             <span className="ff-port-value">{String(aVar.value)}</span>
@@ -39,7 +40,7 @@ export function ComparisonNode({ data }: { data: ComparisonNodeData }) {
             type="target"
             position={Position.Left}
             id="B"
-            style={{ top: "60%" }}
+            style={{ top: "60%", background: getPortColor("INT") }}
           />
           <span className="ff-port-label">B</span>
           {bVar && (
@@ -51,7 +52,7 @@ export function ComparisonNode({ data }: { data: ComparisonNodeData }) {
           {outVar && (
             <span className="ff-port-value">{String(outVar.value)}</span>
           )}
-          <Handle type="source" position={Position.Right} id="OUT" />
+          <Handle type="source" position={Position.Right} id="OUT" style={{ background: getPortColor("BOOL") }} />
         </div>
       </div>
     </div>

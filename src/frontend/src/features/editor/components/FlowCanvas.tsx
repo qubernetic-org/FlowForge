@@ -27,6 +27,14 @@ import type {
 } from "../../../api/types";
 import { getVariablePathsForNode } from "../utils/nodeVariableMapping";
 
+const PORT_DATA_TYPES: Record<string, Record<string, string>> = {
+  input: { OUT: "BOOL" },
+  output: { IN: "BOOL" },
+  timer: { IN: "BOOL", PT: "TIME", Q: "BOOL", ET: "TIME" },
+  counter: { CU: "BOOL", RESET: "BOOL", PV: "INT", Q: "BOOL", CV: "INT" },
+  comparison: { A: "INT", B: "INT", OUT: "BOOL" },
+};
+
 interface FlowCanvasProps {
   flowNodes: FlowNode[];
   flowConnections: FlowConnection[];
@@ -68,15 +76,27 @@ function toReactFlowNodes(
   });
 }
 
+function resolvePortType(
+  nodeId: string,
+  portName: string,
+  flowNodes: FlowNode[],
+): string {
+  const node = flowNodes.find((n) => n.id === nodeId);
+  if (!node) return "DEFAULT";
+  return PORT_DATA_TYPES[node.type]?.[portName] ?? "DEFAULT";
+}
+
 function toReactFlowEdges(
   connections: FlowConnection[],
   isOnline: boolean,
   variableValues: Map<string, PlcVariableValue>,
+  flowNodes: FlowNode[],
 ): Edge[] {
   return connections.map((conn) => {
     const id = `e-${conn.from.nodeId}-${conn.from.portName}-${conn.to.nodeId}-${conn.to.portName}`;
     const sourcePath = `MAIN.${conn.from.nodeId}.${conn.from.portName}`;
     const value = variableValues.get(sourcePath)?.value;
+    const portType = resolvePortType(conn.from.nodeId, conn.from.portName, flowNodes);
 
     return {
       id,
@@ -84,8 +104,8 @@ function toReactFlowEdges(
       sourceHandle: conn.from.portName,
       target: conn.to.nodeId,
       targetHandle: conn.to.portName,
-      type: isOnline ? "online" : "default",
-      data: isOnline ? { isOnline: true, value } : undefined,
+      type: "online",
+      data: { isOnline, value: isOnline ? value : undefined, portType },
     };
   });
 }
@@ -103,7 +123,7 @@ export function FlowCanvas({
   );
 
   const initialEdges = useMemo(
-    () => toReactFlowEdges(flowConnections, isOnline, variableValues),
+    () => toReactFlowEdges(flowConnections, isOnline, variableValues, flowNodes),
     [flowConnections, isOnline, variableValues],
   );
 
@@ -116,7 +136,7 @@ export function FlowCanvas({
   }, [flowNodes, isOnline, nodeStates, variableValues, setNodes]);
 
   useEffect(() => {
-    setEdges(toReactFlowEdges(flowConnections, isOnline, variableValues));
+    setEdges(toReactFlowEdges(flowConnections, isOnline, variableValues, flowNodes));
   }, [flowConnections, isOnline, variableValues, setEdges]);
 
   const onConnect: OnConnect = useCallback(

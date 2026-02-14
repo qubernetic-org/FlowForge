@@ -3,6 +3,7 @@
 
 import { Handle, Position } from "@xyflow/react";
 import type { NodeOnlineData } from "../../../api/types";
+import { getPortColor } from "../utils/portColors";
 
 interface InputNodeData {
   label?: string;
@@ -25,7 +26,7 @@ export function InputNode({ data }: { data: InputNodeData }) {
           {outVar && (
             <span className="ff-port-value">{String(outVar.value)}</span>
           )}
-          <Handle type="source" position={Position.Right} id="OUT" />
+          <Handle type="source" position={Position.Right} id="OUT" style={{ background: getPortColor("BOOL") }} />
         </div>
       </div>
     </div>
