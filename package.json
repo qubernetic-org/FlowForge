@@ -5,10 +5,10 @@
     "husky": "^9.0.0",
     "@commitlint/cli": "^20.4.1"
   },
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Visual no-code PLC programming environment",
   "repository": {
-    "url": "https://github.com/your-org/FlowForge.git",
+    "url": "https://github.com/qubernetic-org/FlowForge.git",
     "type": "git"
   },
   "scripts": {

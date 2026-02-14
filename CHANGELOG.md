@@ -7,6 +7,41 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+---
+
+## [0.2.0] - 2026-02-14
+
+Open source preparation release — AGPL-3.0 dual licensing.
+
+### Added
+- AGPL-3.0 license with dual licensing model (open source + commercial)
+- NOTICE file with dual licensing terms and Qubernetic copyright
+- Contributor License Agreement (CLA) with GitHub Action workflow
+- SPDX license headers (`AGPL-3.0-or-later`) on all source files
+- Dependabot configuration for npm, NuGet, GitHub Actions, and Docker
+- Issue template chooser with GitHub Discussions links
+- GitHub Discussions enabled with pinned welcome, roadmap, ADR, and guidelines
+- GitHub Project board with all 82 issues across 15 milestones
+- CLA Assistant workflow for automated contributor agreement signing
+
+### Changed
+- Development planning moved from ROADMAP.md to GitHub Milestones and Issues
+- Dependabot PRs now target `develop` branch (GitFlow compliance)
+- Bump `actions/checkout` from v4 to v6
+- Bump `actions/setup-node` from v4 to v6
+- Bump `@commitlint/cli` from 19.8.1 to 20.4.1
+- Bump `@commitlint/config-conventional` from 19.8.1 to 20.4.1
+
+### Removed
+- ROADMAP.md (replaced by GitHub Milestones)
+- Proprietary license (replaced by AGPL-3.0)
+
+---
+
+## [0.1.0] - 2026-02-12
+
+Initial repository setup and documentation phase.
+
 ### Added
 - Initial repository structure
 - Project documentation:
@@ -18,11 +53,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - CONTRIBUTING.md for contributor guidelines
   - GIT_WORKFLOW.md for GitFlow and Conventional Commits guide
 - Directory structure:
-  - `src/` - Source code (frontend, backend, build-server, monitor-server)
-  - `doc/` - Documentation
-  - `samples/` - Example projects
-  - `test/` - Test files
-  - `release/` - Release builds
+  - `src/` — Source code (frontend, backend, build-server, monitor-server)
+  - `doc/` — Documentation
+  - `samples/` — Example projects
+  - `test/` — Test files
+  - `release/` — Release builds
 - Git workflow standards:
   - GitFlow branching model implemented
   - Conventional Commits specification adopted
@@ -36,46 +71,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Commit validation test scripts (test-commitlint.sh, test-commitlint.ps1)
 - Comprehensive .gitignore covering multiple tech stacks
 - package.json for Node.js dependencies management
-
-### Changed
-- License changed to AGPL-3.0 with dual licensing (open source + commercial)
-- Added NOTICE file with dual licensing terms
-- Added Contributor License Agreement (CLA)
-- Added SPDX license headers to all source files
-- Bump `actions/checkout` from v4 to v6 in CI workflow
-- Bump `actions/setup-node` from v4 to v6 in CI workflow
-- Bump `@commitlint/config-conventional` from 19.8.1 to 20.4.1
-- Bump `@commitlint/cli` from 19.8.1 to 20.4.1
-
-### Deprecated
-- Nothing yet
-
-### Removed
-- Nothing yet
-
-### Fixed
-- Nothing yet
-
-### Security
-- Nothing yet
-
----
-
-## Version History
-
-### [0.1.0] - 2026-02-12
-
-Initial repository setup and documentation phase.
-
----
-
-## Version Format
-
-**[Major.Minor.Patch]**
-- **Major**: Breaking changes or major feature additions
-- **Minor**: New features, backward compatible
-- **Patch**: Bug fixes, minor improvements
-
----
-
-*Keep this file updated with each significant change!*
+- Docker Compose stack (Traefik, PostgreSQL, MQTT, docker-socket-proxy)
+- Frontend skeleton (React + React Flow + TypeScript + Vite)
+- Backend skeleton (ASP.NET Core + SignalR)
+- Build server skeleton (.NET Worker Service)
+- Monitor server skeleton (.NET + SignalR)
