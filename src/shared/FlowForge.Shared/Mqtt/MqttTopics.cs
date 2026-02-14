@@ -3,6 +3,10 @@
 
 namespace FlowForge.Shared.Mqtt;
 
+/// <summary>
+/// MQTT topics for FlowForge internal messaging.
+/// ADS communication is handled directly via Beckhoff.TwinCAT.Ads — see doc/ADS_INTEGRATION.md.
+/// </summary>
 public static class MqttTopics
 {
     private const string Prefix = "flowforge";
@@ -16,12 +20,6 @@ public static class MqttTopics
     public static string DeployRequest(string targetId) =>
         $"{Prefix}/deploy/request/{targetId}";
 
-    public static string AdsRead(string amsNetId) =>
-        $"{Prefix}/ads/read/{amsNetId}";
-
-    public static string AdsWrite(string amsNetId) =>
-        $"{Prefix}/ads/write/{amsNetId}";
-
-    public static string AdsNotification(string amsNetId) =>
-        $"{Prefix}/ads/notification/{amsNetId}";
+    public static string DeployStatus(Guid deployId) =>
+        $"{Prefix}/deploy/status/{deployId}";
 }

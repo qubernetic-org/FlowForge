@@ -13,4 +13,8 @@ public class TargetService
     {
         _targetRepository = targetRepository;
     }
+
+    // TODO: GetTargetsAsync() — list all targets with cached PLC state (PlcAdsState from last known read)
+    // TODO: SetDeployLockAsync(Guid targetId, bool locked) — manual deploy lock toggle
+    // TODO: IsDeployAllowedAsync(Guid targetId, string userId) — checks lock + production rules + 4-eyes
 }
