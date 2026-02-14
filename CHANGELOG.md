@@ -7,6 +7,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- **Shared DTO library** (`src/shared/FlowForge.Shared/`): common DTOs (Flow, Build, Deploy, Project, Target, Auth, Monitor), enums (Permission, ProjectRole, BuildStatus, DeployStatus), MQTT topic constants
+- **Backend Clean Architecture** (3-project split):
+  - `FlowForge.Backend.Application` — entities, service/repository interfaces, business logic stubs
+  - `FlowForge.Backend.Infrastructure` — EF Core persistence, repository implementations, external service integrations (Git, MQTT, Docker, Keycloak, AES encryption)
+  - Refactored `FlowForge.Backend.Api` — added controller stubs (Projects, Build, Deploy, Targets, Monitor, Admin), middleware (error handling, request logging), Keycloak JWT authentication setup
+- **Build Server architecture** — pipeline pattern (IBuildStep), code generation (INodeTranslator strategy), TwinCAT COM facades (IVisualStudioInstance, IAutomationInterface), MessageFilter, template manager, workspace manager
+- **Monitor Server architecture** — typed SignalR hub interface (IPlcDataHubClient), subscription manager, MQTT ADS client interface, token validator
+- **Frontend architecture** — feature-based folder structure (editor, projects, build, deploy, targets, monitoring, admin), auth layer (Keycloak OIDC), layout components, API client with JWT interceptor; added zustand, react-query, keycloak-js, @microsoft/signalr, react-router-dom
+- **Test projects** (6): xUnit + NSubstitute + FluentAssertions for Shared, Backend.Api, Backend.Application, Backend.Infrastructure, BuildServer, MonitorServer
+- **Root solution** (`src/FlowForge.sln`) including all 12 .NET projects with solution folders
+- **Architecture design documents**: `doc/BUILD_SERVER_DESIGN.md` (Beckhoff Automation Interface, COM constraints, pipeline architecture), `doc/MODULE_ARCHITECTURE.md` (module overview, dependency graphs, technology choices)
+
 ---
 
 ## [0.2.0] - 2026-02-14
