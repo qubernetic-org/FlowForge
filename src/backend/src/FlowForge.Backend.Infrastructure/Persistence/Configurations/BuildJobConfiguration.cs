@@ -1,0 +1,19 @@
+// Copyright (c) 2026 Qubernetic (Biró, Csaba Attila)
+// SPDX-License-Identifier: AGPL-3.0-or-later
+
+using FlowForge.Backend.Application.Entities;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
+
+namespace FlowForge.Backend.Infrastructure.Persistence.Configurations;
+
+public class BuildJobConfiguration : IEntityTypeConfiguration<BuildJob>
+{
+    public void Configure(EntityTypeBuilder<BuildJob> builder)
+    {
+        builder.HasKey(b => b.Id);
+        builder.Property(b => b.Status).HasConversion<string>();
+        builder.HasOne(b => b.Project).WithMany().HasForeignKey(b => b.ProjectId);
+        builder.HasIndex(b => new { b.Status, b.TwinCatVersion });
+    }
+}
