@@ -6,11 +6,16 @@ import { OutputNode } from './OutputNode';
 import { TimerNode } from './TimerNode';
 import { CounterNode } from './CounterNode';
 import { ComparisonNode } from './ComparisonNode';
+import { OnlineEdge } from '../components/OnlineEdge';
 
-export const nodeTypes: Record<string, React.ComponentType> = {
+export const nodeTypes = {
   input: InputNode,
   output: OutputNode,
   timer: TimerNode,
   counter: CounterNode,
   comparison: ComparisonNode,
+};
+
+export const edgeTypes = {
+  online: OnlineEdge,
 };

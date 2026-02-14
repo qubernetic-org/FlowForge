@@ -117,3 +117,19 @@ export interface PlcVariableValue {
   dataType: string;
   timestamp: string;
 }
+
+// Online monitoring
+
+export type NodeExecutionState = "idle" | "active" | "error";
+
+export interface NodeOnlineData {
+  nodeId: string;
+  executionState: NodeExecutionState;
+  variables: PlcVariableValue[];
+}
+
+export type ConnectionStatus =
+  | "disconnected"
+  | "connecting"
+  | "connected"
+  | "error";
