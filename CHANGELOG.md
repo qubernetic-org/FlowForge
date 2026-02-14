@@ -15,7 +15,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - VISUAL_LANGUAGE.md with node specifications
   - DECISION_LOG.md for tracking choices
   - TECH_DECISIONS.md for technology evaluation
-  - ROADMAP.md for development plan
   - CONTRIBUTING.md for contributor guidelines
   - GIT_WORKFLOW.md for GitFlow and Conventional Commits guide
 - Directory structure:

@@ -85,7 +85,9 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for full guidelines.
 | [TECH_DECISIONS.md](doc/TECH_DECISIONS.md) | Technology evaluation and comparison |
 | [VISUAL_LANGUAGE.md](doc/VISUAL_LANGUAGE.md) | Node types, ports, connection rules, type system |
 | [GIT_WORKFLOW.md](doc/GIT_WORKFLOW.md) | GitFlow branching, Conventional Commits, PR guidelines |
-| [ROADMAP.md](ROADMAP.md) | Development phases and milestones |
+## Roadmap
+
+Development planning is tracked via GitHub [Milestones](https://github.com/qubernetic-org/FlowForge/milestones) and [Issues](https://github.com/qubernetic-org/FlowForge/issues).
 
 ## License
 
