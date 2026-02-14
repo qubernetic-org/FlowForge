@@ -1,0 +1,124 @@
+services:
+  # ---------------------------------------------------------------------------
+  # Reverse Proxy — routes frontend, backend, monitor containers
+  # ---------------------------------------------------------------------------
+  traefik:
+    image: traefik:v3.6
+    restart: unless-stopped
+    volumes:
+      - ./infra/traefik/traefik.yml:/etc/traefik/traefik.yml:ro
+    ports:
+      - "80:80"
+    networks:
+      - flowforge
+
+  # ---------------------------------------------------------------------------
+  # Docker Socket Proxy — filtered Docker API for backend (monitor lifecycle)
+  # ---------------------------------------------------------------------------
+  docker-socket-proxy:
+    image: tecnativa/docker-socket-proxy:latest
+    restart: unless-stopped
+    environment:
+      CONTAINERS: 1
+      SERVICES: 0
+      TASKS: 0
+      NETWORKS: 0
+      VOLUMES: 0
+      IMAGES: 0
+      EXEC: 0
+      SWARM: 0
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    networks:
+      - flowforge
+
+  # ---------------------------------------------------------------------------
+  # Frontend — React SPA served by nginx
+  # ---------------------------------------------------------------------------
+  frontend:
+    build:
+      context: ./src/frontend
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.frontend.rule=PathPrefix(`/`)"
+      - "traefik.http.routers.frontend.priority=1"
+      - "traefik.http.services.frontend.loadbalancer.server.port=80"
+    networks:
+      - flowforge
+
+  # ---------------------------------------------------------------------------
+  # Backend — ASP.NET Core API
+  # ---------------------------------------------------------------------------
+  backend:
+    build:
+      context: ./src/backend
+      dockerfile: src/FlowForge.Backend.Api/Dockerfile
+    restart: unless-stopped
+    environment:
+      - ConnectionStrings__PostgreSQL=Host=postgres;Database=${POSTGRES_DB:-flowforge};Username=${POSTGRES_USER:-flowforge};Password=${POSTGRES_PASSWORD:-changeme}
+      - FlowForge__BaseDomain=${BASE_DOMAIN:-localhost}
+      - FlowForge__DockerSocketProxyUrl=http://docker-socket-proxy:2375
+      - Mqtt__Host=mqtt-broker
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.backend-api.rule=PathPrefix(`/api`)"
+      - "traefik.http.routers.backend-api.priority=10"
+      - "traefik.http.routers.backend-api.service=backend"
+      - "traefik.http.routers.backend-hub.rule=PathPrefix(`/hub`)"
+      - "traefik.http.routers.backend-hub.priority=10"
+      - "traefik.http.routers.backend-hub.service=backend"
+      - "traefik.http.services.backend.loadbalancer.server.port=8080"
+    networks:
+      - flowforge
+    depends_on:
+      - postgres
+      - mqtt-broker
+
+  # ---------------------------------------------------------------------------
+  # Keycloak — authentication & authorization (OIDC)
+  # ---------------------------------------------------------------------------
+  # TODO: Add Keycloak service:
+  #   - image: quay.io/keycloak/keycloak
+  #   - command: start --import-realm
+  #   - realm config from ./infra/keycloak/realm-export.json
+  #   - shares PostgreSQL (separate database) or dedicated DB
+  #   - admin console NOT exposed via Traefik (internal only)
+  #   - backend connects via Docker network (http://keycloak:8080)
+  #   - frontend redirects to Keycloak for OIDC login (routed via Traefik)
+
+  # ---------------------------------------------------------------------------
+  # PostgreSQL — metadata, build queue, target registry, audit + Keycloak data
+  # ---------------------------------------------------------------------------
+  postgres:
+    image: postgres:17-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-flowforge}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-changeme}
+      POSTGRES_DB: ${POSTGRES_DB:-flowforge}
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    networks:
+      - flowforge
+
+  # ---------------------------------------------------------------------------
+  # MQTT Broker — build notifications, ADS over MQTT
+  # ---------------------------------------------------------------------------
+  mqtt-broker:
+    image: eclipse-mosquitto:2
+    restart: unless-stopped
+    volumes:
+      - ./infra/mosquitto/mosquitto.conf:/mosquitto/config/mosquitto.conf:ro
+      - mosquitto-data:/mosquitto/data
+    networks:
+      - flowforge
+
+volumes:
+  pgdata:
+  mosquitto-data:
+
+networks:
+  flowforge:
+    name: flowforge

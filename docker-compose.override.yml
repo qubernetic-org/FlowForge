@@ -1,0 +1,26 @@
+# Development overrides — expose individual service ports for debugging.
+# Active by default with `docker compose up` (auto-merged).
+
+services:
+  traefik:
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    ports:
+      - "8080:8080"
+    command:
+      - "--api.dashboard=true"
+      - "--api.insecure=true"
+      - "--entrypoints.web.address=:80"
+      - "--entrypoints.traefik.address=:8080"
+      - "--providers.docker=true"
+      - "--providers.docker.endpoint=unix:///var/run/docker.sock"
+      - "--providers.docker.exposedByDefault=false"
+      - "--providers.docker.network=flowforge"
+
+  postgres:
+    ports:
+      - "5432:5432"
+
+  mqtt-broker:
+    ports:
+      - "1883:1883"

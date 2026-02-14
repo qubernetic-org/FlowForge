@@ -1,0 +1,18 @@
+# Traefik static configuration (production)
+# In production, Traefik connects to Docker via docker-socket-proxy.
+# In development, the override mounts the Docker socket directly.
+
+api:
+  dashboard: false
+
+entryPoints:
+  web:
+    address: ":80"
+
+providers:
+  docker:
+    exposedByDefault: false
+    network: flowforge
+
+log:
+  level: INFO
