@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+---
+
+## [0.3.0] - 2026-02-14
+
+Architecture skeleton and Beckhoff ADS integration.
+
 ### Added
 - **Shared DTO library** (`src/shared/FlowForge.Shared/`): common DTOs (Flow, Build, Deploy, Project, Target, Auth, Monitor), enums (Permission, ProjectRole, BuildStatus, DeployStatus), MQTT topic constants
 - **Backend Clean Architecture** (3-project split):
@@ -14,11 +20,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - `FlowForge.Backend.Infrastructure` — EF Core persistence, repository implementations, external service integrations (Git, MQTT, Docker, Keycloak, AES encryption)
   - Refactored `FlowForge.Backend.Api` — added controller stubs (Projects, Build, Deploy, Targets, Monitor, Admin), middleware (error handling, request logging), Keycloak JWT authentication setup
 - **Build Server architecture** — pipeline pattern (IBuildStep), code generation (INodeTranslator strategy), TwinCAT COM facades (IVisualStudioInstance, IAutomationInterface), MessageFilter, template manager, workspace manager
-- **Monitor Server architecture** — typed SignalR hub interface (IPlcDataHubClient), subscription manager, MQTT ADS client interface, token validator
+- **Monitor Server architecture** — typed SignalR hub interface (IPlcDataHubClient), subscription manager, token validator
 - **Frontend architecture** — feature-based folder structure (editor, projects, build, deploy, targets, monitoring, admin), auth layer (Keycloak OIDC), layout components, API client with JWT interceptor; added zustand, react-query, keycloak-js, @microsoft/signalr, react-router-dom
 - **Test projects** (6): xUnit + NSubstitute + FluentAssertions for Shared, Backend.Api, Backend.Application, Backend.Infrastructure, BuildServer, MonitorServer
 - **Root solution** (`src/FlowForge.sln`) including all 12 .NET projects with solution folders
-- **Architecture design documents**: `doc/BUILD_SERVER_DESIGN.md` (Beckhoff Automation Interface, COM constraints, pipeline architecture), `doc/MODULE_ARCHITECTURE.md` (module overview, dependency graphs, technology choices)
+- **Architecture design documents**: `doc/BUILD_SERVER_DESIGN.md`, `doc/MODULE_ARCHITECTURE.md`, `doc/ADS_INTEGRATION.md`
+- **Beckhoff ADS integration** — direct ADS communication replacing custom MQTT relay:
+  - Shared ADS types: `PlcAdsState` enum, `PlcStateDto`, `AdsConnectionInfo`, `AdsVariableSubscription` DTOs
+  - Monitor Server: `IAdsClient` + `AdsClientWrapper` using `Beckhoff.TwinCAT.Ads` + `TcpRouter` for Linux/Docker
+  - Build Server: `IAdsDeployClient` + `AdsDeployClient` for deploy-time PLC state management
+  - `DeployService` and `TargetService` stubs for deploy workflow and target management
+  - `DeployStatus` MQTT topic for deploy progress notifications
+
+### Changed
+- Monitor Server: replaced `IMqttAdsClient` with direct `IAdsClient` (Beckhoff ADS over TCP)
+- MQTT topics: removed `AdsRead`, `AdsWrite`, `AdsNotification` relay topics — MQTT now used for FlowForge internal messaging only
+- Architecture docs updated to reflect ADS-direct design
+
+### Removed
+- `IMqttAdsClient` and `MqttAdsClient` (MQTT ADS relay no longer needed)
 
 ---
 
