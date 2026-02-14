@@ -265,9 +265,17 @@ Be respectful and professional:
 - Focus on ideas, not individuals
 - Help newcomers
 
+## Contributor License Agreement (CLA)
+
+This project is dual-licensed (AGPL-3.0 + Commercial). All contributors must agree to the [Contributor License Agreement](.github/CLA.md) before their contributions can be accepted.
+
+The CLA grants Qubernetic the right to sublicense contributions under the commercial license while ensuring your contributions remain available under AGPL-3.0 for the open source community.
+
+First-time contributors will be prompted to sign the CLA electronically via a comment on their pull request.
+
 ## License
 
-By contributing, you agree that your contributions will be licensed under the project's license. See [LICENSE.md](LICENSE.md) for details.
+This project is licensed under the [GNU Affero General Public License v3.0](LICENSE). A commercial license is also available — see [NOTICE](NOTICE) for details.
 
 ---
 
