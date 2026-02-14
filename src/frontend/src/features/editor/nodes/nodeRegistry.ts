@@ -1,0 +1,16 @@
+// Copyright (c) 2026 Qubernetic (Biró, Csaba Attila)
+// SPDX-License-Identifier: AGPL-3.0-or-later
+
+import { InputNode } from './InputNode';
+import { OutputNode } from './OutputNode';
+import { TimerNode } from './TimerNode';
+import { CounterNode } from './CounterNode';
+import { ComparisonNode } from './ComparisonNode';
+
+export const nodeTypes: Record<string, React.ComponentType> = {
+  input: InputNode,
+  output: OutputNode,
+  timer: TimerNode,
+  counter: CounterNode,
+  comparison: ComparisonNode,
+};
