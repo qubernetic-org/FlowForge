@@ -53,7 +53,7 @@ Commits are validated by commitlint via husky git hook. **All commits must follo
 
 Types: `feat`, `fix`, `docs`, `style`, `refactor`, `perf`, `test`, `build`, `ci`, `chore`, `revert`
 
-Scopes: `frontend`, `backend`, `build-server`, `monitor-server`, `docs`, `config`, `deps`
+Scopes: `frontend`, `backend`, `build-server`, `monitor-server`, `docs`, `config`, `ci`, `deps`
 
 Rules: imperative mood, lowercase subject, no trailing period, max 72 chars. Use `!` after type/scope for breaking changes.
 
