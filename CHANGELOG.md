@@ -38,7 +38,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - package.json for Node.js dependencies management
 
 ### Changed
-- Nothing yet
+- Bump `actions/checkout` from v4 to v6 in CI workflow
 
 ### Deprecated
 - Nothing yet
