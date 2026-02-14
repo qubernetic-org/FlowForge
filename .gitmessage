@@ -1,0 +1,39 @@
+# <type>[optional scope]: <description>
+# |<----  Using a Maximum Of 72 Characters  ---->|
+
+# [optional body]
+# Explain *what* and *why* (not *how*)
+# |<----   Try To Limit Each Line to a Maximum Of 72 Characters   ---->|
+
+# [optional footer(s)]
+# Closes #issue-number
+# BREAKING CHANGE: describe breaking change
+
+# --- COMMIT TYPES ---
+# feat:     New feature
+# fix:      Bug fix
+# docs:     Documentation only changes
+# style:    Code style (formatting, missing semi-colons, etc)
+# refactor: Code refactoring (no feat/fix)
+# perf:     Performance improvements
+# test:     Adding or updating tests
+# build:    Build system or dependencies
+# ci:       CI/CD configuration changes
+# chore:    Other maintenance tasks
+# revert:   Revert a previous commit
+#
+# --- SCOPES (optional) ---
+# frontend, backend, build-server, monitor-server, docs, config, deps
+#
+# --- EXAMPLES ---
+# feat(frontend): add timer node to visual editor
+# fix(backend): resolve database connection timeout
+# fix(build-server): resolve code generation issue
+# docs: update contributing guide with gitflow
+#
+# --- BREAKING CHANGES ---
+# Use '!' after type/scope or add 'BREAKING CHANGE:' in footer
+# feat(frontend)!: change project format to JSON
+#
+# --- REFERENCES ---
+# Reference issues: Closes #123, Fixes #456, Relates to #789
