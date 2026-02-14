@@ -64,9 +64,13 @@ FlowForge is a visual PLC programming platform:
 
 ## Components
 
+> **Detailed design documents**: See [MODULE_ARCHITECTURE.md](MODULE_ARCHITECTURE.md) for project structure, dependency graphs, and technology choices per module. See [BUILD_SERVER_DESIGN.md](BUILD_SERVER_DESIGN.md) for Beckhoff Automation Interface patterns, pipeline architecture, and COM interop details.
+
 ### 1. Visual Editor (Frontend)
 
 **Purpose**: Provide intuitive node-based visual programming interface
+
+**Architecture**: Feature-based folder organization with shared utilities. See [MODULE_ARCHITECTURE.md](MODULE_ARCHITECTURE.md).
 
 **Key Responsibilities**:
 - Render visual programming canvas
@@ -83,6 +87,8 @@ FlowForge is a visual PLC programming platform:
 ### 2. Backend API Server (.NET)
 
 **Purpose**: Manage projects, orchestrate builds, and handle authentication
+
+**Architecture**: Clean Architecture Lite (3 projects: Application, Infrastructure, Api). See [MODULE_ARCHITECTURE.md](MODULE_ARCHITECTURE.md).
 
 **Key Responsibilities**:
 - User authentication via Keycloak (OIDC JWT validation) with role-based access control
@@ -105,6 +111,8 @@ FlowForge is a visual PLC programming platform:
 
 **Purpose**: Convert visual programs to TwinCAT PLC projects
 
+**Architecture**: Single project with pipeline pattern (Pipeline, CodeGen, TwinCat, Services). See [BUILD_SERVER_DESIGN.md](BUILD_SERVER_DESIGN.md).
+
 **Key Responsibilities**:
 - Clone/fetch project repo from GitHub
 - Parse JSON intermediate format (flow JSON)
@@ -123,6 +131,8 @@ FlowForge is a visual PLC programming platform:
 ### 4. Monitor Server (on-demand containers)
 
 **Purpose**: Provide real-time PLC data streaming to the frontend without loading the backend API
+
+**Architecture**: Single project with organized folders (Hubs, Auth, Services). See [MODULE_ARCHITECTURE.md](MODULE_ARCHITECTURE.md).
 
 **Key Responsibilities**:
 - Read PLC variables via ADS over MQTT (cyclic reads or event-based subscriptions)
