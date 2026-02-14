@@ -1,0 +1,24 @@
+FlowForge — Visual No-Code PLC Programming Platform
+Copyright (c) 2026 Qubernetic (Biró, Csaba Attila)
+
+This software is dual-licensed:
+
+1. Open Source License (AGPL-3.0)
+   You may use, modify, and distribute this software under the terms of the
+   GNU Affero General Public License v3.0. See the LICENSE file for the full
+   license text.
+
+   Under the AGPL-3.0, if you modify this software and make it available
+   over a network, you must release your modifications under the same license.
+
+2. Commercial License
+   For use cases where the AGPL-3.0 terms are not suitable — such as
+   proprietary modifications, closed-source integrations, or offering this
+   software as a managed service — a commercial license is available from
+   Qubernetic.
+
+   Contact: csaba.biro@qubernetic.com
+
+Unless you have received this software under a separate commercial license
+agreement from Qubernetic, your use of this software is governed by the
+AGPL-3.0.

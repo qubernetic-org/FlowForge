@@ -91,5 +91,11 @@ Development planning is tracked via GitHub [Milestones](https://github.com/quber
 
 ## License
 
-Copyright (c) 2026 FlowForge Contributors. All rights reserved.
-See [LICENSE.md](LICENSE.md) for details.
+Copyright (c) 2026 Qubernetic (Biró, Csaba Attila)
+
+This project is dual-licensed:
+
+- **Open Source**: [GNU Affero General Public License v3.0](LICENSE) — free to use, modify, and distribute under AGPL-3.0 terms
+- **Commercial**: A proprietary license for use cases incompatible with AGPL-3.0 is available from [Qubernetic](mailto:csaba.biro@qubernetic.com)
+
+See [NOTICE](NOTICE) for details.

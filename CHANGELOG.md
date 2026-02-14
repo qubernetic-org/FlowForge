@@ -38,6 +38,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - package.json for Node.js dependencies management
 
 ### Changed
+- License changed to AGPL-3.0 with dual licensing (open source + commercial)
+- Added NOTICE file with dual licensing terms
+- Added Contributor License Agreement (CLA)
+- Added SPDX license headers to all source files
 - Bump `actions/checkout` from v4 to v6 in CI workflow
 - Bump `actions/setup-node` from v4 to v6 in CI workflow
 - Bump `@commitlint/config-conventional` from 19.8.1 to 20.4.1
