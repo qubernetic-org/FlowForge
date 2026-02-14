@@ -17,7 +17,7 @@ public class MonitorOptions
     /// <summary>Short-lived auth token for frontend SignalR connections.</summary>
     public string AuthToken { get; set; } = string.Empty;
 
-    /// <summary>MQTT broker host for ADS over MQTT.</summary>
+    /// <summary>MQTT broker host for FlowForge internal messaging.</summary>
     public string MqttHost { get; set; } = "mqtt-broker";
 
     /// <summary>MQTT broker port.</summary>
@@ -25,4 +25,13 @@ public class MonitorOptions
 
     /// <summary>Target PLC AMS Net ID to monitor.</summary>
     public string TargetAmsNetId { get; set; } = string.Empty;
+
+    /// <summary>Hostname or IP of the target PLC for TcpRouter connection.</summary>
+    public string? TargetHostname { get; set; }
+
+    /// <summary>ADS port on the target PLC (default 851 = PLC Runtime 1).</summary>
+    public int AdsPort { get; set; } = 851;
+
+    /// <summary>TCP port for the ADS router on the target (default 48898).</summary>
+    public int AdsTcpPort { get; set; } = 48898;
 }
