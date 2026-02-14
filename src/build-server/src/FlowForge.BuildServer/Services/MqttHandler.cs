@@ -3,8 +3,11 @@
 
 namespace FlowForge.BuildServer.Services;
 
+/// <summary>
+/// MQTT handler for FlowForge internal messaging only.
+/// ADS communication uses Beckhoff.TwinCAT.Ads directly — see doc/ADS_INTEGRATION.md.
+/// </summary>
 public class MqttHandler
 {
-    // TODO: MQTT subscribe for build notifications, publish progress updates,
-    //       relay ADS commands for deployment
+    // TODO: MQTT subscribe for build notifications, publish progress/deploy status updates
 }
