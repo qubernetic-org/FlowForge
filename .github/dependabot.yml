@@ -1,0 +1,56 @@
+version: 2
+
+updates:
+  # npm (commitlint, husky, frontend)
+  - package-ecosystem: "npm"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+    labels:
+      - "deps"
+    commit-message:
+      prefix: "chore(deps)"
+
+  # NuGet (backend, build-server, monitor-server)
+  - package-ecosystem: "nuget"
+    directory: "/src/backend"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+    labels:
+      - "deps"
+    commit-message:
+      prefix: "chore(deps)"
+
+  # GitHub Actions
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+    labels:
+      - "deps"
+    commit-message:
+      prefix: "ci(deps)"
+
+  # Docker (Dockerfiles)
+  - package-ecosystem: "docker"
+    directory: "/src/frontend"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+    labels:
+      - "deps"
+    commit-message:
+      prefix: "build(deps)"
+
+  - package-ecosystem: "docker"
+    directory: "/src/backend/src/FlowForge.Backend.Api"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+    labels:
+      - "deps"
+    commit-message:
+      prefix: "build(deps)"

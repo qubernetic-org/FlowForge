@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Feature Discussion
+    url: https://github.com/qubernetic-org/FlowForge/discussions/categories/ideas
+    about: Propose and discuss new features or architecture changes before creating an issue.
+  - name: Questions & Help
+    url: https://github.com/qubernetic-org/FlowForge/discussions/categories/q-a
+    about: Ask questions about setup, usage, or development.
