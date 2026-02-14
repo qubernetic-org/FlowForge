@@ -10,13 +10,18 @@ FlowForge is a visual no-code PLC programming environment inspired by Unreal Eng
 
 Four main components: **Visual Editor** (web frontend) → **.NET Backend API** → **PLC Build Server(s)** + **Monitor Server(s)** → Beckhoff PLC via ADS over MQTT.
 
-- `src/frontend/` — Web-based node editor (React + TypeScript + React Flow); direct SignalR to monitor containers for live PLC data
-- `src/backend/` — ASP.NET Core API (Controllers, PostgreSQL/EF Core, SignalR, MQTTnet, LibGit2Sharp); manages projects, routes build requests to version-specific build servers, orchestrates monitor containers, authenticates via OIDC (Keycloak), exposes admin API as facade over Keycloak Admin REST API
-- `src/build-server/` — PLC build server (C#/.NET, required for Beckhoff Automation Interface); handles both build and deploy (TwinCAT Engineering needed for PLC activation); version-specific instances on dedicated Windows Servers
-- `src/monitor-server/` — On-demand PLC monitoring container (C#/.NET, SignalR, MQTTnet); streams live ADS data directly to frontend via SignalR, backend manages lifecycle only
-- `doc/` — Architecture docs, decision log, tech decisions
+- `src/shared/FlowForge.Shared/` — Common DTOs, enums, MQTT topic constants. No external dependencies.
+- `src/frontend/` — Web-based node editor (React + TypeScript + React Flow + Zustand + React Query); feature-based folder structure with auth (Keycloak), layout, and feature modules (editor, projects, build, deploy, targets, monitoring, admin)
+- `src/backend/` — Clean Architecture Lite (3 projects):
+  - `src/backend/src/FlowForge.Backend.Api/` — ASP.NET Core API (Controllers, Middleware, Auth, SignalR hubs). References Application + Infrastructure + Shared.
+  - `src/backend/src/FlowForge.Backend.Application/` — Business logic, entities, service/repository interfaces. References Shared only.
+  - `src/backend/src/FlowForge.Backend.Infrastructure/` — EF Core, external integrations (Git, MQTT, Docker, Keycloak, AES encryption). References Application + Shared.
+- `src/build-server/` — PLC build server (C#/.NET); pipeline architecture with sequential build steps (IBuildStep), code generation (INodeTranslator strategy pattern), TwinCAT COM facades (IVisualStudioInstance, IAutomationInterface). References Shared.
+- `src/monitor-server/` — On-demand PLC monitoring container (C#/.NET, SignalR, MQTTnet); typed hub interface, subscription manager, MQTT ADS client. References Shared.
+- `doc/` — Architecture docs (`ARCHITECTURE.md`, `BUILD_SERVER_DESIGN.md`, `MODULE_ARCHITECTURE.md`), decision log, tech decisions
 - `samples/` — Example visual programs
-- `test/` — Tests (framework TBD)
+- `test/` — xUnit + NSubstitute + FluentAssertions test projects: `FlowForge.Shared.Tests`, `FlowForge.Backend.Api.Tests`, `FlowForge.Backend.Application.Tests`, `FlowForge.Backend.Infrastructure.Tests`, `FlowForge.BuildServer.Tests`, `FlowForge.MonitorServer.Tests`
+- `src/FlowForge.sln` — Root solution including all .NET projects
 
 **Key architectural decisions:**
 - **Keycloak as auth layer**: all authentication/authorization via Keycloak (local users, LDAP federation, external SSO — all Keycloak config). Backend only validates JWT from Keycloak. User management via FlowForge admin UI (facade over Keycloak Admin REST API).
@@ -41,6 +46,25 @@ npm install
 # Or use the setup scripts which also configure git hooks and commit template:
 ./scripts/setup-dev.sh        # Linux/macOS
 .\scripts\setup-dev.ps1       # Windows PowerShell
+```
+
+## Build & Test Commands
+
+```bash
+# Build all .NET projects
+dotnet build src/FlowForge.sln
+
+# Run all .NET tests
+dotnet test src/FlowForge.sln
+
+# Build/test individual modules
+dotnet build src/backend/FlowForge.Backend.sln
+dotnet build src/build-server/FlowForge.BuildServer.sln
+dotnet build src/monitor-server/FlowForge.MonitorServer.sln
+
+# Frontend
+cd src/frontend && npm run build
+cd src/frontend && npm run dev
 ```
 
 ## Commit Conventions

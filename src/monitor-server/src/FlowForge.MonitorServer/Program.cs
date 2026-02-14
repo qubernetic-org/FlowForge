@@ -3,6 +3,7 @@
 
 using FlowForge.MonitorServer.Configuration;
 using FlowForge.MonitorServer.Hubs;
+using FlowForge.MonitorServer.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -11,6 +12,13 @@ var builder = WebApplication.CreateBuilder(args);
 // ---------------------------------------------------------------------------
 builder.Services.Configure<MonitorOptions>(
     builder.Configuration.GetSection(MonitorOptions.Section));
+
+// ---------------------------------------------------------------------------
+// ADS client (direct ADS-over-TCP via TcpRouter — see doc/ADS_INTEGRATION.md)
+// ---------------------------------------------------------------------------
+builder.Services.AddSingleton<IAdsClient, AdsClientWrapper>();
+builder.Services.AddSingleton<SubscriptionManager>();
+// TODO: Add IHostedService to establish ADS connection on startup using MonitorOptions
 
 // ---------------------------------------------------------------------------
 // SignalR

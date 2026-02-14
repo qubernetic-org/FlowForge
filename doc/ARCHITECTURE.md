@@ -16,10 +16,10 @@ FlowForge is a visual PLC programming platform:
 - **Backend → MQTT Broker**: Build notify (wake up build servers)
 - **Backend → Monitor Container**: Container lifecycle management (start/stop on demand)
 - **Build Server → Backend**: REST (poll for work, report results)
-- **Build Server ↔ MQTT Broker**: Receive build notify, send progress updates, deploy commands (ADS over MQTT)
+- **Build Server ↔ MQTT Broker**: Receive build notify, send progress/deploy status updates
 - **Build Server ↔ GitHub**: Git clone/fetch + push generated PLC solution
-- **Monitor Container ↔ MQTT Broker**: ADS over MQTT reads/subscriptions for live PLC data
-- **Build Server → MQTT Broker → PLC**: Deploy/activate via ADS over MQTT (requires TwinCAT Engineering on the build server)
+- **Build Server → PLC**: Deploy/activate via direct ADS (Beckhoff.TwinCAT.Ads, native TwinCAT router)
+- **Monitor Container → PLC**: Live PLC data via direct ADS-over-TCP (Beckhoff.TwinCAT.Ads + TcpRouter)
 
 ## User Workflow
 
@@ -59,14 +59,18 @@ FlowForge is a visual PLC programming platform:
 2. Backend spins up a dedicated monitor container for that session
 3. Backend issues a short-lived auth token and returns the container's SignalR endpoint to the frontend
 4. Frontend connects directly to the monitor container via SignalR
-5. Monitor container reads PLC data via ADS over MQTT and streams it to the frontend in real-time
+5. Monitor container reads PLC data via direct ADS (Beckhoff.TwinCAT.Ads + TcpRouter) and streams it to the frontend in real-time
 6. User closes the monitoring view → backend stops the container
 
 ## Components
 
+> **Detailed design documents**: See [MODULE_ARCHITECTURE.md](MODULE_ARCHITECTURE.md) for project structure, dependency graphs, and technology choices per module. See [BUILD_SERVER_DESIGN.md](BUILD_SERVER_DESIGN.md) for Beckhoff Automation Interface patterns, pipeline architecture, and COM interop details.
+
 ### 1. Visual Editor (Frontend)
 
 **Purpose**: Provide intuitive node-based visual programming interface
+
+**Architecture**: Feature-based folder organization with shared utilities. See [MODULE_ARCHITECTURE.md](MODULE_ARCHITECTURE.md).
 
 **Key Responsibilities**:
 - Render visual programming canvas
@@ -83,6 +87,8 @@ FlowForge is a visual PLC programming platform:
 ### 2. Backend API Server (.NET)
 
 **Purpose**: Manage projects, orchestrate builds, and handle authentication
+
+**Architecture**: Clean Architecture Lite (3 projects: Application, Infrastructure, Api). See [MODULE_ARCHITECTURE.md](MODULE_ARCHITECTURE.md).
 
 **Key Responsibilities**:
 - User authentication via Keycloak (OIDC JWT validation) with role-based access control
@@ -105,6 +111,8 @@ FlowForge is a visual PLC programming platform:
 
 **Purpose**: Convert visual programs to TwinCAT PLC projects
 
+**Architecture**: Single project with pipeline pattern (Pipeline, CodeGen, TwinCat, Services). See [BUILD_SERVER_DESIGN.md](BUILD_SERVER_DESIGN.md).
+
 **Key Responsibilities**:
 - Clone/fetch project repo from GitHub
 - Parse JSON intermediate format (flow JSON)
@@ -112,9 +120,9 @@ FlowForge is a visual PLC programming platform:
 - Create TwinCAT project structure
 - Commit/push generated PLC solution back to the repo
 - Interface with Beckhoff Automation Interface for compilation
-- Deploy (activate) TwinCAT solution on target PLC via ADS over MQTT (requires TwinCAT Engineering)
+- Deploy (activate) TwinCAT solution on target PLC via direct ADS (requires TwinCAT Engineering)
 
-**Note**: Build and Deploy are separate operations with a shared permission hierarchy. The build server handles both: generation/compilation (build) and PLC activation via ADS over MQTT (deploy). Deploy requires TwinCAT Engineering, which is only available on the build server. The backend orchestrates the requests; the build server executes them.
+**Note**: Build and Deploy are separate operations with a shared permission hierarchy. The build server handles both: generation/compilation (build) and PLC activation via direct ADS (deploy). Deploy requires TwinCAT Engineering, which is only available on the build server. The backend orchestrates the requests; the build server executes them.
 
 **Technology**: C# (.NET) - Required for Automation Interface compatibility
 
@@ -124,8 +132,10 @@ FlowForge is a visual PLC programming platform:
 
 **Purpose**: Provide real-time PLC data streaming to the frontend without loading the backend API
 
+**Architecture**: Single project with organized folders (Hubs, Auth, Services). See [MODULE_ARCHITECTURE.md](MODULE_ARCHITECTURE.md).
+
 **Key Responsibilities**:
-- Read PLC variables via ADS over MQTT (cyclic reads or event-based subscriptions)
+- Read PLC variables via direct ADS (Beckhoff.TwinCAT.Ads + TcpRouter; cyclic reads or event-based subscriptions)
 - Convert ADS data to frontend-consumable format
 - Stream live data directly to the frontend via SignalR
 - Authenticate frontend connections using short-lived tokens issued by the backend
@@ -134,11 +144,11 @@ FlowForge is a visual PLC programming platform:
 
 **Why separate from the backend?**
 - Monitoring is long-lived and resource-intensive (continuous ADS reads); the backend API is short-lived request-response
-- The ADS data is already on the MQTT broker — routing it back through MQTT just to proxy via the backend is an unnecessary round-trip
+- Direct ADS-over-TCP from the container to the PLC avoids unnecessary MQTT round-trips
 - Isolation: a slow or crashing PLC connection does not affect the backend API
 - Scalability: containers scale independently per monitoring session
 
-**Technology**: C# (.NET) + SignalR + MQTTnet
+**Technology**: C# (.NET) + SignalR + Beckhoff.TwinCAT.Ads + TcpRouter
 
 **Authentication**: Backend generates a short-lived token on monitor start; the container validates this token on SignalR connection — no need to implement full SSO in the container.
 
@@ -161,7 +171,8 @@ Build scheduling uses PostgreSQL as the queue backend with MQTT for lightweight 
 **MQTT topics:**
 - `flowforge/build/notify/{twincat-version}` — backend → build servers (lightweight wake-up signal)
 - `flowforge/build/progress/{build-id}` — build server → backend (real-time progress)
-- `flowforge/deploy/request/{target-id}` — build server → PLC (ADS over MQTT activation, requires TwinCAT Engineering)
+- `flowforge/deploy/request/{target-id}` — backend → build server (deploy request)
+- `flowforge/deploy/status/{deploy-id}` — build server → backend (deploy progress)
 
 ## Authentication & Authorization
 
@@ -232,7 +243,7 @@ project-repo/
 
 3. **Deploy Phase** (executed by build server):
    - Backend routes deploy request to the appropriate build server
-   - Build server activates the TwinCAT solution on the target PLC via ADS over MQTT (requires TwinCAT Engineering)
+   - Build server activates the TwinCAT solution on the target PLC via direct ADS (requires TwinCAT Engineering)
    - Separate permissions, blocked by deploy lock on running PLCs
    - Status updates sent back through SignalR
    - User receives success/error feedback
@@ -241,7 +252,7 @@ project-repo/
    - User requests monitoring for a target PLC
    - Backend starts a dedicated monitor container, returns SignalR endpoint + short-lived token
    - Frontend connects directly to the monitor container via SignalR
-   - Monitor container reads PLC data via ADS over MQTT and streams to the frontend
+   - Monitor container reads PLC data via direct ADS-over-TCP and streams to the frontend
    - Backend is not in the data path — only manages container lifecycle
    - Session ends → backend stops the container
 
@@ -351,7 +362,7 @@ All services except the build server run as Docker containers in a single Docker
 | **Backend** | ASP.NET Core | API server, build orchestration, monitor container lifecycle, admin API (Keycloak facade) |
 | **Keycloak** | quay.io/keycloak/keycloak | Authentication & authorization — local users, LDAP federation, external SSO (OIDC/SAML). Admin console not exposed; managed via FlowForge admin UI |
 | **PostgreSQL** | postgres | Metadata, build queue, target registry, audit + Keycloak data |
-| **MQTT Broker** | mosquitto / emqx | ADS over MQTT communication, build notifications |
+| **MQTT Broker** | mosquitto / emqx | FlowForge internal messaging: build notifications, progress, deploy status |
 | **docker-socket-proxy** | tecnativa/docker-socket-proxy | Filtered Docker API access for backend (containers only) |
 | **Monitor Containers** | On-demand (C#/.NET) | Live PLC data streaming via SignalR, created/destroyed per session |
 
@@ -378,7 +389,7 @@ This limits the blast radius if the backend is compromised — it can only manag
 The build server runs on dedicated Windows Server instances (not in the Docker stack):
 
 - **Requirement**: TwinCAT Engineering (Windows desktop dependency for Beckhoff Automation Interface)
-- **Connectivity**: Connects to the stack via REST (poll backend for build jobs) and MQTT (receive notifications, send progress, deploy via ADS over MQTT)
+- **Connectivity**: Connects to the stack via REST (poll backend for build jobs) and MQTT (receive notifications, send progress). Deploy uses direct ADS via native TwinCAT router.
 - **Scaling**: One instance per supported TwinCAT version
 - **Cannot be containerized**: TwinCAT Engineering requires Windows desktop environment with COM interop
 
@@ -410,7 +421,7 @@ Monitor containers are registered with Traefik automatically via Docker labels (
 - **Service user**: Minimal permissions — repo creation only
 - **Authorization**: Role-based access control via Keycloak roles/groups
 - **Deploy protection**: 4-eyes principle for production targets, deploy lock on running PLCs
-- **PLC Access**: ADS over MQTT via central broker (no per-server ADS route configuration)
+- **PLC Access**: Direct ADS via Beckhoff.TwinCAT.Ads (TcpRouter for Linux containers, native router for Windows build servers). See [ADS_INTEGRATION.md](doc/ADS_INTEGRATION.md).
 - **Docker socket isolation**: Backend accesses Docker API only through docker-socket-proxy (filtered to container create/start/stop/remove)
 - **Monitor container auth**: Short-lived tokens issued by backend, validated by container on SignalR connect — no full auth stack in containers
 - **Code Injection**: Validate all user inputs to prevent malicious code generation

@@ -6,12 +6,19 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <RootNamespace>FlowForge.BuildServer</RootNamespace>
     <OutputType>Exe</OutputType>
+    <!-- TODO: Set PlatformTarget to x86 when COM references (EnvDTE, TCatSysManagerLib) are added -->
+    <!-- <PlatformTarget>x86</PlatformTarget> -->
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Beckhoff.TwinCAT.Ads" Version="7.0.*" />
     <PackageReference Include="Microsoft.Extensions.Http" Version="9.0.*" />
     <PackageReference Include="MQTTnet" Version="5.*" />
     <PackageReference Include="LibGit2Sharp" Version="0.31.*" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\shared\FlowForge.Shared\FlowForge.Shared.csproj" />
   </ItemGroup>
 
 </Project>
