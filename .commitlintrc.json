@@ -28,6 +28,7 @@
         "monitor-server",
         "docs",
         "config",
+        "ci",
         "deps"
       ]
     ],
