@@ -135,6 +135,7 @@ All commit messages **MUST** follow the [Conventional Commits](https://www.conve
 - `monitor-server` - Monitor server changes
 - `docs` - Documentation
 - `config` - Configuration files
+- `ci` - CI/CD configuration
 - `deps` - Dependencies
 
 **Examples:**
@@ -183,20 +184,32 @@ git commit -m "your message"
 # ❌ Commit message does not follow Conventional Commits format
 ```
 
+**Hard Rules (enforced by CI):**
+- **Header max 72 characters** (includes `type(scope): ` prefix — plan accordingly)
+- **Body lines max 100 characters** each
+- No trailing period in subject
+- Blank line between header and body
+- Subject must not be empty
+- `subject-case` is **disabled** (acronyms like DTO, MQTT, TwinCAT are common)
+
+**PR titles** are also validated against the same rules — keep them under 72 characters.
+
 **Good Practices:**
 - Use present tense: "add feature" not "added feature"
 - Use imperative mood: "fix bug" not "fixes bug"
-- Keep first line under 72 characters
 - Reference issues: `Closes #123`, `Fixes #456`, `Relates to #789`
 - Write descriptive body for complex changes
 
-#### Coding Standards
+#### CI Checks
 
-Once technology stack is finalized, we'll establish:
-- Code formatting rules (ESLint, Prettier, etc.)
-- Naming conventions
-- Documentation requirements
-- Testing requirements
+Every PR runs two automated checks:
+
+1. **Validate Commit Messages** — validates all PR commits AND the PR title against `.commitlintrc.json`
+2. **CLA Assistant** — checks Contributor License Agreement signature (first-time contributors only; org members are allowlisted)
+
+Both checks must pass before merge. See [CLAUDE.md](CLAUDE.md#ci-checks) for detailed CI notes.
+
+#### Coding Standards
 
 **Current Standards:**
 - Use meaningful variable and function names

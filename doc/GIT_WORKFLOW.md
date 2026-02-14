@@ -202,17 +202,19 @@ git push origin --delete hotfix/critical-bug-fix
 - `monitor-server` - Monitor server (src/monitor-server/)
 - `docs` - Documentation
 - `config` - Configuration files
+- `ci` - CI/CD configuration
 - `deps` - Dependencies
 
 ### Guidelines
 
 1. **Use imperative mood**: "add feature" not "added feature"
-2. **Lowercase subject**: `feat: add feature` not `feat: Add feature`
-3. **No period at end**: `fix: resolve bug` not `fix: resolve bug.`
-4. **Max 72 characters** for subject line
+2. **No period at end**: `fix: resolve bug` not `fix: resolve bug.`
+3. **Max 72 characters** for header (includes `type(scope): ` prefix)
+4. **Max 100 characters** per line in body
 5. **Separate subject from body** with blank line
-6. **Wrap body at 72 characters**
-7. **Reference issues**: `Closes #123`, `Fixes #456`
+6. **Reference issues**: `Closes #123`, `Fixes #456`
+
+> **Note**: `subject-case` is disabled — acronyms (DTO, MQTT, TwinCAT) are common in this project.
 
 ### Breaking Changes
 
@@ -254,13 +256,15 @@ See migration guide in docs/MIGRATION.md"
 
 ### PR Title Format
 
-PR titles should follow Conventional Commits:
+PR titles are validated by CI against the same commitlint rules. **Keep titles under 72 characters.**
 
 ```
 feat(frontend): add visual timer node component
 fix(backend): resolve project save error
 docs: update git workflow documentation
 ```
+
+> **Note**: PR title changes do NOT re-trigger CI. Push a commit to trigger a new check.
 
 ### PR Description Template
 
@@ -305,8 +309,13 @@ Relates to #456
    - Address all review comments
    - Keep discussion professional
 
-3. **Merge strategy**:
-   - **Squash and merge** for small feature branches
+3. **CLA check**:
+   - First-time contributors must sign the CLA via PR comment
+   - Org members are allowlisted and skip CLA signing
+   - Signatures stored on `cla-signatures` branch
+
+4. **Merge strategy**:
+   - **Squash and merge** for feature/bugfix branches
    - **Merge commit** for release/hotfix branches
    - Delete source branch after merge
 
