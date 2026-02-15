@@ -15,6 +15,7 @@ interface EntryNodeData {
 
 export function EntryNode({ data }: { data: EntryNodeData }) {
   const execState = data.onlineData?.executionState ?? "idle";
+  const execColor = execState === "active" ? "#ffffff" : getPortColor("EXEC");
   return (
     <div className={`ff-node ff-node-entry ff-exec-${execState}`}>
       <div className="ff-node-header">
@@ -33,7 +34,7 @@ export function EntryNode({ data }: { data: EntryNodeData }) {
             type="source"
             position={Position.Right}
             id="ENO"
-            style={{ background: getPortColor("EXEC") }}
+            style={{ background: execColor }}
           />
         </div>
       </div>

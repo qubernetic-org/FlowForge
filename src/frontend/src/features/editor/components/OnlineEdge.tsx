@@ -43,14 +43,14 @@ export function OnlineEdge({
   const portType = edgeData?.portType ?? "DEFAULT";
   const sourceExecState = edgeData?.sourceExecState ?? "idle";
   const isExec = portType === "EXEC";
-  const isActive = isOnline && (isExec ? sourceExecState === "active" : Boolean(value));
+  const isExecActive = isOnline && isExec && sourceExecState === "active";
 
   const baseColor = getPortColor(portType);
-  const strokeColor = isActive && isExec ? "#ffffff" : baseColor;
+  const strokeColor = isExecActive ? "#ffffff" : baseColor;
   const edgeStyle: React.CSSProperties = {
     stroke: strokeColor,
-    strokeWidth: isActive ? 2.5 : 2,
-    filter: isActive
+    strokeWidth: isExecActive ? 2.5 : 2,
+    filter: isExecActive
       ? `drop-shadow(0 0 4px ${strokeColor}80) drop-shadow(0 0 8px ${strokeColor}40)`
       : undefined,
   };

@@ -24,6 +24,7 @@ function valueClass(dataType: string, value: unknown): string {
 
 export function MethodEntryNode({ data }: { data: MethodEntryNodeData }) {
   const execState = data.onlineData?.executionState ?? "idle";
+  const execColor = execState === "active" ? "#ffffff" : getPortColor("EXEC");
   const cyclesVar = findVar(data.onlineData, ".Cycles");
   const tempVar = findVar(data.onlineData, ".Temp");
   const label = data.label ?? "MethodEntry";
@@ -44,7 +45,7 @@ export function MethodEntryNode({ data }: { data: MethodEntryNodeData }) {
           <div className="ff-port ff-port-input" />
           <div className="ff-port ff-port-output">
             <span className="ff-port-label" style={{ color: "#999" }}>ENO</span>
-            <Handle type="source" position={Position.Right} id="ENO" style={{ background: getPortColor("EXEC") }} />
+            <Handle type="source" position={Position.Right} id="ENO" style={{ background: execColor }} />
           </div>
         </div>
         <div className="ff-port-row">

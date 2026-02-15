@@ -25,6 +25,7 @@ function valueClass(dataType: string, value: unknown): string {
 
 export function ComparisonNode({ data }: { data: ComparisonNodeData }) {
   const execState = data.onlineData?.executionState ?? "idle";
+  const execColor = execState === "active" ? "#ffffff" : getPortColor("EXEC");
   const aVar = findVar(data.onlineData, ".A");
   const bVar = findVar(data.onlineData, ".B");
   const outVar = findVar(data.onlineData, ".OUT");
@@ -43,12 +44,12 @@ export function ComparisonNode({ data }: { data: ComparisonNodeData }) {
       <div className="ff-node-body">
         <div className="ff-port-row ff-port-exec">
           <div className="ff-port ff-port-input">
-            <Handle type="target" position={Position.Left} id="EN" style={{ background: getPortColor("EXEC") }} />
+            <Handle type="target" position={Position.Left} id="EN" style={{ background: execColor }} />
             <span className="ff-port-label" style={{ color: "#999" }}>EN</span>
           </div>
           <div className="ff-port ff-port-output">
             <span className="ff-port-label" style={{ color: "#999" }}>ENO</span>
-            <Handle type="source" position={Position.Right} id="ENO" style={{ background: getPortColor("EXEC") }} />
+            <Handle type="source" position={Position.Right} id="ENO" style={{ background: execColor }} />
           </div>
         </div>
         <div className="ff-port-row">
