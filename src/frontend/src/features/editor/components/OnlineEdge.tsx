@@ -13,6 +13,7 @@ interface OnlineEdgeData {
   isOnline?: boolean;
   value?: unknown;
   portType?: string;
+  sourceExecState?: string;
   [key: string]: unknown;
 }
 
@@ -40,9 +41,12 @@ export function OnlineEdge({
   const isOnline = edgeData?.isOnline ?? false;
   const value = edgeData?.value;
   const portType = edgeData?.portType ?? "DEFAULT";
-  const isActive = isOnline && Boolean(value);
+  const sourceExecState = edgeData?.sourceExecState ?? "idle";
+  const isExec = portType === "EXEC";
+  const isActive = isOnline && (isExec ? sourceExecState === "active" : Boolean(value));
 
-  const strokeColor = getPortColor(portType);
+  const baseColor = getPortColor(portType);
+  const strokeColor = isActive && isExec ? "#ffffff" : baseColor;
   const edgeStyle: React.CSSProperties = {
     stroke: strokeColor,
     strokeWidth: isActive ? 2.5 : 2,
@@ -67,6 +71,7 @@ export function OnlineEdge({
               position: "absolute",
               transform: `translate(-50%, -50%) translate(${labelX}px,${labelY}px)`,
               pointerEvents: "all",
+              color: getPortColor(portType),
             }}
           >
             {String(value)}
