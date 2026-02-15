@@ -73,14 +73,14 @@ const mockConnections: FlowConnection[] = [
 
 function makeMockValues(tick: number): PlcVariableValue[] {
   const ts = new Date().toISOString();
-  const running = tick % 6 < 4; // on 4 cycles, off 2
-  const counterVal = tick % 20;
+  const running = tick % 48 < 32; // on ~3.2s, off ~1.6s
+  const counterVal = Math.floor(tick / 8) % 20; // count up every ~800ms
   return [
     { path: "MAIN.input_1.OUT", value: running, dataType: "BOOL", timestamp: ts },
     { path: "MAIN.timer_1.IN", value: running, dataType: "BOOL", timestamp: ts },
     { path: "MAIN.timer_1.PT", value: "T#2S", dataType: "TIME", timestamp: ts },
-    { path: "MAIN.timer_1.Q", value: running && tick % 6 > 1, dataType: "BOOL", timestamp: ts },
-    { path: "MAIN.timer_1.ET", value: running ? `T#${(tick % 3) * 700}MS` : "T#0MS", dataType: "TIME", timestamp: ts },
+    { path: "MAIN.timer_1.Q", value: running && tick % 48 > 16, dataType: "BOOL", timestamp: ts },
+    { path: "MAIN.timer_1.ET", value: running ? `T#${Math.min((tick % 48) * 100, 2000)}MS` : "T#0MS", dataType: "TIME", timestamp: ts },
     { path: "MAIN.counter_1.CU", value: running, dataType: "BOOL", timestamp: ts },
     { path: "MAIN.counter_1.RESET", value: false, dataType: "BOOL", timestamp: ts },
     { path: "MAIN.counter_1.PV", value: 10, dataType: "INT", timestamp: ts },
@@ -89,27 +89,27 @@ function makeMockValues(tick: number): PlcVariableValue[] {
     { path: "MAIN.comparison_1.A", value: counterVal, dataType: "INT", timestamp: ts },
     { path: "MAIN.comparison_1.B", value: 10, dataType: "INT", timestamp: ts },
     { path: "MAIN.comparison_1.OUT", value: counterVal >= 10, dataType: "BOOL", timestamp: ts },
-    { path: "MAIN.output_1.IN", value: running && tick % 6 > 1, dataType: "BOOL", timestamp: ts },
+    { path: "MAIN.output_1.IN", value: running && tick % 48 > 16, dataType: "BOOL", timestamp: ts },
     { path: "MAIN.output_2.IN", value: counterVal >= 10, dataType: "BOOL", timestamp: ts },
     // IF node
     { path: "MAIN.if_1.COND", value: counterVal >= 10, dataType: "BOOL", timestamp: ts },
     // MethodCall node
     { path: "MAIN.method_call_1.Cycles", value: counterVal, dataType: "INT", timestamp: ts },
     { path: "MAIN.method_call_1.Temp", value: 45, dataType: "INT", timestamp: ts },
-    { path: "MAIN.method_call_1.RET", value: counterVal >= 10 && tick % 8 > 5, dataType: "BOOL", timestamp: ts },
+    { path: "MAIN.method_call_1.RET", value: counterVal >= 10 && tick % 64 > 40, dataType: "BOOL", timestamp: ts },
     // Method entry: CleanupCycle VAR_INPUT params
     { path: "MAIN.method_entry.Cycles", value: counterVal, dataType: "INT", timestamp: ts },
     { path: "MAIN.method_entry.Temp", value: 45, dataType: "INT", timestamp: ts },
     // Method: CleanupCycle body
     { path: "MAIN.for_1.FROM", value: 0, dataType: "INT", timestamp: ts },
     { path: "MAIN.for_1.TO", value: 3, dataType: "INT", timestamp: ts },
-    { path: "MAIN.for_1.i", value: counterVal >= 10 ? tick % 3 : 0, dataType: "INT", timestamp: ts },
+    { path: "MAIN.for_1.i", value: counterVal >= 10 ? Math.floor(tick / 8) % 3 : 0, dataType: "INT", timestamp: ts },
     // Wash pulse timer
     { path: "MAIN.timer_2.IN", value: counterVal >= 10, dataType: "BOOL", timestamp: ts },
     { path: "MAIN.timer_2.PT", value: "T#500MS", dataType: "TIME", timestamp: ts },
-    { path: "MAIN.timer_2.Q", value: counterVal >= 10 && tick % 4 > 1, dataType: "BOOL", timestamp: ts },
-    { path: "MAIN.timer_2.ET", value: counterVal >= 10 ? `T#${(tick % 2) * 250}MS` : "T#0MS", dataType: "TIME", timestamp: ts },
-    { path: "MAIN.output_3.IN", value: counterVal >= 10 && tick % 4 > 1, dataType: "BOOL", timestamp: ts },
+    { path: "MAIN.timer_2.Q", value: counterVal >= 10 && tick % 32 > 16, dataType: "BOOL", timestamp: ts },
+    { path: "MAIN.timer_2.ET", value: counterVal >= 10 ? `T#${Math.min((tick % 5) * 100, 500)}MS` : "T#0MS", dataType: "TIME", timestamp: ts },
+    { path: "MAIN.output_3.IN", value: counterVal >= 10 && tick % 32 > 16, dataType: "BOOL", timestamp: ts },
   ];
 }
 
@@ -171,7 +171,7 @@ export function EditorPageDemo() {
         // always executes every PLC scan cycle.
         // Method call branch only executes when IF condition is true.
         // I/O nodes (input/output) are mappings, not in exec chain — never glow.
-        const condTrue = (tickRef.current % 20) >= 10;
+        const condTrue = (Math.floor(tickRef.current / 8) % 20) >= 10;
         const MAIN_CHAIN = new Set(["entry", "timer_1", "counter_1", "comparison_1", "if_1"]);
         const METHOD_BRANCH = new Set(["method_call_1", "method_entry", "for_1", "timer_2"]);
         for (const node of mockNodes) {
@@ -186,7 +186,7 @@ export function EditorPageDemo() {
 
         setVariableValues(valMap);
         setNodeStates(stateMap);
-      }, 800);
+      }, 100);
     }, 600);
   }, [tickRef]);
 
@@ -225,7 +225,25 @@ export function EditorPageDemo() {
         onGoOffline={goOffline}
       />
 
+      {/* TODO: Add a StatusBar component below ff-editor-content showing:
+           - PLC RT runtime state (Run / Stop / Exception / Config)
+           - ADS connection state (Connected / Disconnected / Error + AmsNetId)
+           - Build server status (Idle / Building / Offline)
+           - Last build timestamp + result (Success / Failed)
+           - Current cycle time / scan time from PLC
+           - Active deploy lock indicator
+           Use a thin horizontal bar similar to VS Code status bar. */}
+
       <div className="ff-editor-content">
+        {/* TODO: Add a VariableDeclaration panel (collapsible, maybe above or beside
+             the NodePalette) for declaring POU-level variables (VAR, VAR_INPUT,
+             VAR_OUTPUT, VAR_IN_OUT, VAR_TEMP). Should support:
+             - Table-style variable list (Name, Type, Initial Value, Comment)
+             - Add / remove / reorder rows
+             - Inline type picker (BOOL, INT, REAL, TIME, STRING, ARRAY, FB instances)
+             - Drag-to-canvas to create a variable read/write node
+             - In online mode: show live values inline (read-only)
+             Location TBD — could be a tab in the left panel or a separate collapsible section. */}
         <NodePalette isOnline={isOnline} style={{ width: paletteWidth }} />
         <ResizeDivider direction="vertical" onResize={resizePalette} />
 
