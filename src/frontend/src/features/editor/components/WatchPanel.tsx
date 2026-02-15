@@ -21,6 +21,17 @@ function watchValueClass(dataType: string): string {
   return "ff-watch-value ff-watch-value-default";
 }
 
+// TODO: Split this panel into tabbed sections (or side-by-side when wide enough):
+//   1. "Watch" tab — current variable watch table (as-is)
+//   2. "Debug Console" tab — scrollable log output showing:
+//      - Flow validation errors (missing connections, type mismatches)
+//      - ADS communication errors (timeout, access denied, symbol not found)
+//      - Build output / warnings forwarded from build server
+//      - User-facing log messages (e.g. from a future LogMessage node)
+//      - Timestamped entries with severity icons (info / warn / error)
+//   Layout strategy: when panel height > ~300px, show tabs side-by-side (50/50);
+//   otherwise use tab switcher. Consider a shared filter/search bar across both.
+
 export function WatchPanel({
   isOnline,
   watchList,
