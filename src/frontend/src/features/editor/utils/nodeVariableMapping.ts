@@ -8,11 +8,16 @@ import type { FlowNode } from "../../../api/types";
  * Must match the build server's code generation naming conventions.
  */
 const nodePortMap: Record<string, string[]> = {
+  entry: [],
   input: ["OUT"],
   output: ["IN"],
   timer: ["IN", "PT", "Q", "ET"],
   counter: ["CU", "RESET", "PV", "Q", "CV"],
   comparison: ["A", "B", "OUT"],
+  if: ["COND"],
+  for: ["FROM", "TO", "i"],
+  methodCall: ["Cycles", "Temp", "RET"],
+  methodEntry: ["Cycles", "Temp"],
 };
 
 /**
