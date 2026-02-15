@@ -36,7 +36,7 @@ const PORT_DATA_TYPES: Record<string, Record<string, string>> = {
   timer: { EN: "EXEC", ENO: "EXEC", IN: "BOOL", PT: "TIME", Q: "BOOL", ET: "TIME" },
   counter: { EN: "EXEC", ENO: "EXEC", CU: "BOOL", RESET: "BOOL", PV: "INT", Q: "BOOL", CV: "INT" },
   comparison: { EN: "EXEC", ENO: "EXEC", A: "INT", B: "INT", OUT: "BOOL" },
-  if: { EN: "EXEC", ENO: "EXEC", COND: "BOOL", TRUE: "EXEC" },
+  if: { EN: "EXEC", ENO: "EXEC", COND: "BOOL", TRUE: "EXEC", FALSE: "EXEC" },
   for: { EN: "EXEC", ENO: "EXEC", DO: "EXEC", FROM: "INT", TO: "INT", i: "INT" },
   methodCall: { EN: "EXEC", ENO: "EXEC", Cycles: "INT", Temp: "INT", RET: "BOOL" },
   methodEntry: { ENO: "EXEC", Cycles: "INT", Temp: "INT" },
@@ -120,7 +120,16 @@ function toReactFlowEdges(
     const sourcePath = `MAIN.${conn.from.nodeId}.${conn.from.portName}`;
     const value = variableValues.get(sourcePath)?.value;
     const portType = resolvePortType(conn.from.nodeId, conn.from.portName, flowNodes);
-    const sourceExecState = nodeStates.get(conn.from.nodeId) ?? "idle";
+    let sourceExecState = nodeStates.get(conn.from.nodeId) ?? "idle";
+
+    // IF TRUE/FALSE branches: only active when node executes AND condition matches
+    const sourceNode = flowNodes.find((n) => n.id === conn.from.nodeId);
+    if (sourceNode?.type === "if" && (conn.from.portName === "TRUE" || conn.from.portName === "FALSE") && sourceExecState === "active") {
+      const condPath = `MAIN.${conn.from.nodeId}.COND`;
+      const condVal = variableValues.get(condPath)?.value;
+      const branchActive = conn.from.portName === "TRUE" ? condVal === true : condVal === false;
+      if (!branchActive) sourceExecState = "idle";
+    }
 
     return {
       id,

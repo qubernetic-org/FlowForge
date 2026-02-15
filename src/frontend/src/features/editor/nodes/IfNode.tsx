@@ -24,7 +24,10 @@ function valueClass(dataType: string, value: unknown): string {
 
 export function IfNode({ data }: { data: IfNodeData }) {
   const execState = data.onlineData?.executionState ?? "idle";
+  const execColor = execState === "active" ? "#ffffff" : getPortColor("EXEC");
   const condVar = findVar(data.onlineData, ".COND");
+  const trueColor = execState === "active" && condVar?.value === true ? "#ffffff" : getPortColor("EXEC");
+  const falseColor = execState === "active" && condVar?.value === false ? "#ffffff" : getPortColor("EXEC");
 
   return (
     <div className={`ff-node ff-node-if ff-exec-${execState}`}>
@@ -40,12 +43,12 @@ export function IfNode({ data }: { data: IfNodeData }) {
       <div className="ff-node-body">
         <div className="ff-port-row ff-port-exec">
           <div className="ff-port ff-port-input">
-            <Handle type="target" position={Position.Left} id="EN" style={{ background: getPortColor("EXEC") }} />
+            <Handle type="target" position={Position.Left} id="EN" style={{ background: execColor }} />
             <span className="ff-port-label" style={{ color: "#999" }}>EN</span>
           </div>
           <div className="ff-port ff-port-output">
             <span className="ff-port-label" style={{ color: "#999" }}>ENO</span>
-            <Handle type="source" position={Position.Right} id="ENO" style={{ background: getPortColor("EXEC") }} />
+            <Handle type="source" position={Position.Right} id="ENO" style={{ background: execColor }} />
           </div>
         </div>
         <div className="ff-port-row">
@@ -56,7 +59,14 @@ export function IfNode({ data }: { data: IfNodeData }) {
           </div>
           <div className="ff-port ff-port-output">
             <span className="ff-port-label" style={{ color: "#999" }}>TRUE</span>
-            <Handle type="source" position={Position.Right} id="TRUE" style={{ background: getPortColor("EXEC") }} />
+            <Handle type="source" position={Position.Right} id="TRUE" style={{ background: trueColor }} />
+          </div>
+        </div>
+        <div className="ff-port-row">
+          <div className="ff-port ff-port-input" />
+          <div className="ff-port ff-port-output">
+            <span className="ff-port-label" style={{ color: "#999" }}>FALSE</span>
+            <Handle type="source" position={Position.Right} id="FALSE" style={{ background: falseColor }} />
           </div>
         </div>
       </div>
