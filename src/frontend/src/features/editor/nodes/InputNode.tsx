@@ -11,6 +11,12 @@ interface InputNodeData {
   [key: string]: unknown;
 }
 
+function valueClass(dataType: string, value: unknown): string {
+  const base = `ff-port-value ff-port-value-${dataType.toLowerCase()}`;
+  if (dataType === "BOOL" && value === false) return `${base} ff-port-value-false`;
+  return base;
+}
+
 export function InputNode({ data }: { data: InputNodeData }) {
   const execState = data.onlineData?.executionState ?? "idle";
   const outVar = data.onlineData?.variables.find((v) =>
@@ -19,12 +25,17 @@ export function InputNode({ data }: { data: InputNodeData }) {
 
   return (
     <div className={`ff-node ff-node-input ff-exec-${execState}`}>
-      <div className="ff-node-header">{data.label ?? "Input"}</div>
+      <div className="ff-node-header">
+        <div className="ff-node-header-info">
+          <span className="ff-node-label">{data.label ?? "Input"}</span>
+          <span className="ff-node-type-path">I/O · Input</span>
+        </div>
+      </div>
       <div className="ff-node-body">
         <div className="ff-port ff-port-output">
           <span className="ff-port-label">OUT</span>
           {outVar && (
-            <span className="ff-port-value">{String(outVar.value)}</span>
+            <span className={valueClass("BOOL", outVar.value)}>{String(outVar.value)}</span>
           )}
           <Handle type="source" position={Position.Right} id="OUT" style={{ background: getPortColor("BOOL") }} />
         </div>

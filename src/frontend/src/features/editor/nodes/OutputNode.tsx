@@ -11,6 +11,12 @@ interface OutputNodeData {
   [key: string]: unknown;
 }
 
+function valueClass(dataType: string, value: unknown): string {
+  const base = `ff-port-value ff-port-value-${dataType.toLowerCase()}`;
+  if (dataType === "BOOL" && value === false) return `${base} ff-port-value-false`;
+  return base;
+}
+
 export function OutputNode({ data }: { data: OutputNodeData }) {
   const execState = data.onlineData?.executionState ?? "idle";
   const inVar = data.onlineData?.variables.find((v) =>
@@ -19,13 +25,18 @@ export function OutputNode({ data }: { data: OutputNodeData }) {
 
   return (
     <div className={`ff-node ff-node-output ff-exec-${execState}`}>
-      <div className="ff-node-header">{data.label ?? "Output"}</div>
+      <div className="ff-node-header">
+        <div className="ff-node-header-info">
+          <span className="ff-node-label">{data.label ?? "Output"}</span>
+          <span className="ff-node-type-path">I/O · Output</span>
+        </div>
+      </div>
       <div className="ff-node-body">
         <div className="ff-port ff-port-input">
           <Handle type="target" position={Position.Left} id="IN" style={{ background: getPortColor("BOOL") }} />
           <span className="ff-port-label">IN</span>
           {inVar && (
-            <span className="ff-port-value">{String(inVar.value)}</span>
+            <span className={valueClass("BOOL", inVar.value)}>{String(inVar.value)}</span>
           )}
         </div>
       </div>
