@@ -1,7 +1,7 @@
 // Copyright (c) 2026 Qubernetic (Biró, Csaba Attila)
 // SPDX-License-Identifier: AGPL-3.0-or-later
 
-import { useCallback, useEffect, useMemo } from "react";
+import { useCallback, useEffect, useMemo, useRef } from "react";
 import {
   ReactFlow,
   Controls,
@@ -31,15 +31,17 @@ import { computeExecutionOrder } from "../utils/executionOrder";
 
 const PORT_DATA_TYPES: Record<string, Record<string, string>> = {
   entry: { ENO: "EXEC" },
-  input: { OUT: "BOOL" },
-  output: { IN: "BOOL" },
+  varRead: { VALUE: "BOOL" },
+  varWrite: { VALUE: "BOOL" },
   timer: { EN: "EXEC", ENO: "EXEC", IN: "BOOL", PT: "TIME", Q: "BOOL", ET: "TIME" },
   counter: { EN: "EXEC", ENO: "EXEC", CU: "BOOL", RESET: "BOOL", PV: "INT", Q: "BOOL", CV: "INT" },
   comparison: { EN: "EXEC", ENO: "EXEC", A: "INT", B: "INT", OUT: "BOOL" },
   if: { EN: "EXEC", ENO: "EXEC", COND: "BOOL", TRUE: "EXEC", FALSE: "EXEC" },
   for: { EN: "EXEC", ENO: "EXEC", DO: "EXEC", FROM: "INT", TO: "INT", i: "INT" },
-  methodCall: { EN: "EXEC", ENO: "EXEC", Cycles: "INT", Temp: "INT", RET: "BOOL" },
+  methodCall: { EN: "EXEC", ENO: "EXEC", Cycles: "INT", Temp: "INT", RETURN: "BOOL" },
   methodEntry: { ENO: "EXEC", Cycles: "INT", Temp: "INT" },
+  return: { EN: "EXEC", RETURN: "BOOL" },
+  propertyEntry: { ENO: "EXEC", VALUE: "INT" },
 };
 
 export interface FlowGroup {
@@ -105,6 +107,9 @@ function resolvePortType(
 ): string {
   const node = flowNodes.find((n) => n.id === nodeId);
   if (!node) return "DEFAULT";
+  if ((node.type === "varRead" || node.type === "varWrite") && portName === "VALUE") {
+    return (node.parameters.dataType as string) ?? "BOOL";
+  }
   return PORT_DATA_TYPES[node.type]?.[portName] ?? "DEFAULT";
 }
 
@@ -233,7 +238,15 @@ export function FlowCanvas({
           x: Math.round(n.position.x),
           y: Math.round(n.position.y),
         }));
+        const groups = nodes.filter((n) => n.type === "flowGroup").map((n) => ({
+          id: n.id,
+          x: Math.round(n.position.x),
+          y: Math.round(n.position.y),
+          width: n.data.width,
+          height: n.data.height,
+        }));
         console.log("Node positions:", JSON.stringify(positions, null, 2));
+        console.log("Group positions:", JSON.stringify(groups, null, 2));
       }
     };
     window.addEventListener("keydown", handler);
@@ -249,8 +262,15 @@ export function FlowCanvas({
     [onNodeSelect],
   );
 
+  const canvasRef = useRef<HTMLDivElement>(null);
+
+  const handleMouseDownCapture = useCallback(() => {
+    const pane = canvasRef.current?.querySelector(".react-flow") as HTMLElement | null;
+    pane?.focus({ preventScroll: true });
+  }, []);
+
   return (
-    <div className="ff-flow-canvas">
+    <div className="ff-flow-canvas" ref={canvasRef} onMouseDownCapture={handleMouseDownCapture}>
       <ReactFlow
         nodes={nodes}
         edges={edges}

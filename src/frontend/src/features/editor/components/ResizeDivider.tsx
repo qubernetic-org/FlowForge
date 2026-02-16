@@ -6,9 +6,10 @@ import { useCallback, useRef } from "react";
 interface ResizeDividerProps {
   direction: "horizontal" | "vertical";
   onResize: (delta: number) => void;
+  onDoubleClick?: () => void;
 }
 
-export function ResizeDivider({ direction, onResize }: ResizeDividerProps) {
+export function ResizeDivider({ direction, onResize, onDoubleClick }: ResizeDividerProps) {
   const startPos = useRef(0);
 
   const onMouseDown = useCallback(
@@ -45,6 +46,7 @@ export function ResizeDivider({ direction, onResize }: ResizeDividerProps) {
     <div
       className={`ff-resize-divider ff-resize-${direction}`}
       onMouseDown={onMouseDown}
+      onDoubleClick={onDoubleClick}
     />
   );
 }

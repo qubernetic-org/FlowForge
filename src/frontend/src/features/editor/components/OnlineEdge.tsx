@@ -4,9 +4,9 @@
 import {
   BaseEdge,
   getBezierPath,
-  EdgeLabelRenderer,
   type EdgeProps,
 } from "@xyflow/react";
+import { useEffect, useRef } from "react";
 import { getPortColor } from "../utils/portColors";
 
 interface OnlineEdgeData {
@@ -16,6 +16,10 @@ interface OnlineEdgeData {
   sourceExecState?: string;
   [key: string]: unknown;
 }
+
+// Dot spacing (dash period) and animation speed
+const DOT_PERIOD = 25; // px between dot centers
+const CYCLE_MS = 500;  // ms for one dot to travel one period
 
 export function OnlineEdge({
   id,
@@ -28,7 +32,7 @@ export function OnlineEdge({
   data,
   markerEnd,
 }: EdgeProps) {
-  const [edgePath, labelX, labelY] = getBezierPath({
+  const [edgePath] = getBezierPath({
     sourceX,
     sourceY,
     sourcePosition,
@@ -39,7 +43,6 @@ export function OnlineEdge({
 
   const edgeData = data as OnlineEdgeData | undefined;
   const isOnline = edgeData?.isOnline ?? false;
-  const value = edgeData?.value;
   const portType = edgeData?.portType ?? "DEFAULT";
   const sourceExecState = edgeData?.sourceExecState ?? "idle";
   const isExec = portType === "EXEC";
@@ -55,6 +58,33 @@ export function OnlineEdge({
       : undefined,
   };
 
+  // --- Flowing dots via rAF (bypasses React re-render entirely) ----------
+  const pathRef = useRef<SVGPathElement>(null);
+  const activeRef = useRef(false);
+  activeRef.current = isExecActive;
+
+  useEffect(() => {
+    const el = pathRef.current;
+    if (!el) return;
+
+    let rafId: number;
+
+    const tick = (time: number) => {
+      if (activeRef.current) {
+        // time is a monotonic DOMHighResTimeStamp — use it directly
+        const offset = DOT_PERIOD - ((time / CYCLE_MS) * DOT_PERIOD) % DOT_PERIOD;
+        el.setAttribute("stroke-dashoffset", String(offset));
+        el.style.visibility = "visible";
+      } else {
+        el.style.visibility = "hidden";
+      }
+      rafId = requestAnimationFrame(tick);
+    };
+
+    rafId = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(rafId);
+  }, []);
+
   return (
     <>
       <BaseEdge
@@ -63,20 +93,18 @@ export function OnlineEdge({
         markerEnd={markerEnd}
         style={edgeStyle}
       />
-      {isOnline && value !== undefined && (
-        <EdgeLabelRenderer>
-          <div
-            className="ff-edge-value"
-            style={{
-              position: "absolute",
-              transform: `translate(-50%, -50%) translate(${labelX}px,${labelY}px)`,
-              pointerEvents: "all",
-              color: getPortColor(portType),
-            }}
-          >
-            {String(value)}
-          </div>
-        </EdgeLabelRenderer>
+      {isExec && (
+        <path
+          ref={pathRef}
+          d={edgePath}
+          fill="none"
+          stroke="#ffffff"
+          strokeWidth={5}
+          strokeLinecap="round"
+          strokeDasharray={`3 ${DOT_PERIOD - 3}`}
+          filter="drop-shadow(0 0 4px #ffffff)"
+          style={{ visibility: "hidden", pointerEvents: "none" }}
+        />
       )}
     </>
   );

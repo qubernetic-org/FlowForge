@@ -6,17 +6,17 @@ import { T } from "../utils/designTokens";
 
 interface NodePaletteProps {
   isOnline: boolean;
+  collapsed: boolean;
+  onToggleCollapsed: () => void;
   style?: React.CSSProperties;
 }
 
 const toolboxCategories = [
   {
-    name: "I/O", color: T.catIO, expanded: true,
+    name: "Variables", color: T.catVar, expanded: true,
     nodes: [
-      { name: "Digital Input", desc: "Read PLC input" },
-      { name: "Digital Output", desc: "Write PLC output" },
-      { name: "Analog Input", desc: "Read analog value" },
-      { name: "Analog Output", desc: "Write analog value" },
+      { name: "Variable Read", desc: "Read any variable" },
+      { name: "Variable Write", desc: "Write any variable" },
     ],
   },
   {
@@ -51,24 +51,25 @@ const toolboxCategories = [
   { name: "Interfaces", color: T.catInterface, expanded: false, nodes: [], count: 0 },
 ];
 
-const filterChips = ["All", "\u2605 Favorites", "I/O", "FB", "FUN", "Method", "Interface"];
+const filterChips = ["All", "\u2605 Favorites", "VAR", "FB", "FUN", "Method", "Interface"];
 
-export function NodePalette({ isOnline, style }: NodePaletteProps) {
+export function NodePalette({ isOnline, collapsed, onToggleCollapsed, style }: NodePaletteProps) {
   const [activeFilter] = useState(0);
-  const [collapsed, setCollapsed] = useState(false);
 
   if (collapsed) {
     return (
-      <div className="ff-panel-collapsed" onClick={() => setCollapsed(false)}>
-        <span className="ff-panel-collapsed-text">NODES &#x25B8;</span>
+      <div className="ff-panel-collapsed ff-panel-collapsed-left" onClick={onToggleCollapsed}>
+        <span className="ff-panel-collapsed-text">Nodes</span>
       </div>
     );
   }
 
   return (
     <aside className="ff-panel-left" style={style}>
-      <div className="ff-toolbox-header">
-        <div className="ff-toolbox-title" style={{ cursor: "pointer" }} onClick={() => setCollapsed(true)}>&#x25C0; Nodes</div>
+      <div className="ff-panel-header" onClick={onToggleCollapsed}>
+        <span className="ff-panel-title">Nodes</span>
+      </div>
+      <div className="ff-toolbox-search-wrapper">
         <input
           type="text"
           className="ff-toolbox-search"

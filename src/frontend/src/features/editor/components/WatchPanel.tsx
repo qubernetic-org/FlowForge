@@ -10,6 +10,8 @@ interface WatchPanelProps {
   variableValues: Map<string, PlcVariableValue>;
   onAdd: (path: string) => void;
   onRemove: (path: string) => void;
+  collapsed: boolean;
+  onToggleCollapsed: () => void;
   style?: React.CSSProperties;
 }
 
@@ -38,9 +40,10 @@ export function WatchPanel({
   variableValues,
   onAdd,
   onRemove,
+  collapsed,
+  onToggleCollapsed,
   style,
 }: WatchPanelProps) {
-  const [isOpen, setIsOpen] = useState(true);
   const [newPath, setNewPath] = useState("");
 
   const handleAdd = () => {
@@ -51,10 +54,10 @@ export function WatchPanel({
     }
   };
 
-  if (!isOpen) {
+  if (collapsed) {
     return (
-      <div className="ff-watch-collapsed" onClick={() => setIsOpen(true)}>
-        <span className="ff-watch-collapsed-title">&#x25B8; Watch</span>
+      <div className="ff-watch-collapsed" onClick={onToggleCollapsed}>
+        <span className="ff-watch-collapsed-title">Watch</span>
         <span className="ff-watch-collapsed-count">
           {watchList.length} variables
         </span>
@@ -64,29 +67,25 @@ export function WatchPanel({
 
   return (
     <div className="ff-watch-panel" style={style}>
-      {/* Header bar */}
-      <div className="ff-watch-header">
-        <div className="ff-watch-header-left">
-          <span className="ff-watch-title" onClick={() => setIsOpen(false)}>
-            &#x25BE; Watch
-          </span>
-          <span className="ff-watch-badge">
-            {watchList.length} variables
-          </span>
-        </div>
-        <div className="ff-watch-header-right">
-          <input
-            type="text"
-            className="ff-watch-input"
-            placeholder="MAIN.nCounter"
-            value={newPath}
-            onChange={(e) => setNewPath(e.target.value)}
-            onKeyDown={(e) => e.key === "Enter" && handleAdd()}
-          />
-          <button className="ff-btn ff-btn-sm ff-btn-primary" onClick={handleAdd}>
-            Add
-          </button>
-        </div>
+      <div className="ff-panel-header" onClick={onToggleCollapsed}>
+        <span className="ff-panel-title">Watch</span>
+        <span className="ff-watch-badge">
+          {watchList.length} variables
+        </span>
+      </div>
+      <div className="ff-watch-controls">
+        <input
+          type="text"
+          className="ff-watch-input"
+          placeholder="MAIN.nCounter"
+          value={newPath}
+          onChange={(e) => setNewPath(e.target.value)}
+          onKeyDown={(e) => e.key === "Enter" && handleAdd()}
+          onClick={(e) => e.stopPropagation()}
+        />
+        <button className="ff-btn ff-btn-sm ff-btn-primary" onClick={handleAdd}>
+          Add
+        </button>
       </div>
 
       {/* Table */}

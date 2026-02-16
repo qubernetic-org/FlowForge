@@ -9,7 +9,6 @@ interface EditorToolbarProps {
   targetName: string | null;
   error: string | null;
   onToggleMode: () => void;
-  onGoOffline: () => void;
 }
 
 const statusColors: Record<ConnectionStatus, string> = {
@@ -25,7 +24,6 @@ export function EditorToolbar({
   targetName,
   error,
   onToggleMode,
-  onGoOffline,
 }: EditorToolbarProps) {
   const isOnline = mode === "online";
 
@@ -78,18 +76,8 @@ export function EditorToolbar({
 
       {/* Right: Actions + avatar */}
       <div className="ff-toolbar-right">
-        <button className="ff-btn ff-btn-ghost">Build</button>
-        {mode === "edit" && (
-          <button className="ff-btn ff-btn-ghost">Deploy</button>
-        )}
-        {isOnline && (
-          <button className="ff-btn ff-btn-danger" onClick={onGoOffline}>
-            Go Offline
-          </button>
-        )}
-        {mode === "edit" && (
-          <span className="ff-toolbar-saved">Saved 2 min ago</span>
-        )}
+        <button className="ff-btn ff-btn-ghost" disabled={isOnline}>Build</button>
+        <button className="ff-btn ff-btn-ghost" disabled={isOnline}>Deploy</button>
         <div className="ff-toolbar-avatar">CB</div>
       </div>
     </div>
