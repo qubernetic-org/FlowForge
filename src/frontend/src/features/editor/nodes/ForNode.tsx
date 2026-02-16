@@ -5,7 +5,7 @@ import { Handle, Position } from "@xyflow/react";
 import type { NodeOnlineData } from "../../../api/types";
 import { getPortColor } from "../utils/portColors";
 
-interface CounterNodeData {
+interface ForNodeData {
   label?: string;
   executionOrder?: number;
   onlineData?: NodeOnlineData;
@@ -22,21 +22,19 @@ function valueClass(dataType: string, value: unknown): string {
   return base;
 }
 
-export function CounterNode({ data }: { data: CounterNodeData }) {
+export function ForNode({ data }: { data: ForNodeData }) {
   const execState = data.onlineData?.executionState ?? "idle";
   const execColor = execState === "active" ? "#ffffff" : getPortColor("EXEC");
-  const cuVar = findVar(data.onlineData, ".CU");
-  const resetVar = findVar(data.onlineData, ".RESET");
-  const pvVar = findVar(data.onlineData, ".PV");
-  const qVar = findVar(data.onlineData, ".Q");
-  const cvVar = findVar(data.onlineData, ".CV");
+  const iVar = findVar(data.onlineData, ".i");
+  const fromVar = findVar(data.onlineData, ".FROM");
+  const toVar = findVar(data.onlineData, ".TO");
 
   return (
-    <div className={`ff-node ff-node-counter ff-exec-${execState}`}>
+    <div className={`ff-node ff-node-for ff-exec-${execState}`}>
       <div className="ff-node-header">
         <div className="ff-node-header-info">
-          <span className="ff-node-label">{data.label ?? "Counter"}</span>
-          <span className="ff-node-type-path">FB · Tc2_Standard.CTU</span>
+          <span className="ff-node-label">{data.label ?? "FOR"}</span>
+          <span className="ff-node-type-path">INSTR · FOR</span>
         </div>
         {data.executionOrder != null && (
           <span className="ff-node-exec-order">#{data.executionOrder}</span>
@@ -55,35 +53,26 @@ export function CounterNode({ data }: { data: CounterNodeData }) {
         </div>
         <div className="ff-port-row">
           <div className="ff-port ff-port-input">
-            <Handle type="target" position={Position.Left} id="CU" style={{ background: getPortColor("BOOL") }} />
-            <span className="ff-port-label">CU</span>
-            {cuVar && <span className={valueClass("BOOL", cuVar.value)}>{String(cuVar.value)}</span>}
+            <Handle type="target" position={Position.Left} id="FROM" style={{ background: getPortColor("INT") }} />
+            <span className="ff-port-label">FROM</span>
+            {fromVar && <span className={valueClass("INT", fromVar.value)}>{String(fromVar.value)}</span>}
           </div>
           <div className="ff-port ff-port-output">
-            {qVar && <span className={valueClass("BOOL", qVar.value)}>{String(qVar.value)}</span>}
-            <span className="ff-port-label">Q</span>
-            <Handle type="source" position={Position.Right} id="Q" style={{ background: getPortColor("BOOL") }} />
+            <span className="ff-port-label" style={{ color: "#999" }}>DO</span>
+            <Handle type="source" position={Position.Right} id="DO" style={{ background: execColor }} />
           </div>
         </div>
         <div className="ff-port-row">
           <div className="ff-port ff-port-input">
-            <Handle type="target" position={Position.Left} id="RESET" style={{ background: getPortColor("BOOL") }} />
-            <span className="ff-port-label">RESET</span>
-            {resetVar && <span className={valueClass("BOOL", resetVar.value)}>{String(resetVar.value)}</span>}
+            <Handle type="target" position={Position.Left} id="TO" style={{ background: getPortColor("INT") }} />
+            <span className="ff-port-label">TO</span>
+            {toVar && <span className={valueClass("INT", toVar.value)}>{String(toVar.value)}</span>}
           </div>
           <div className="ff-port ff-port-output">
-            {cvVar && <span className={valueClass("INT", cvVar.value)}>{String(cvVar.value)}</span>}
-            <span className="ff-port-label">CV</span>
-            <Handle type="source" position={Position.Right} id="CV" style={{ background: getPortColor("INT") }} />
+            {iVar && <span className={valueClass("INT", iVar.value)}>{String(iVar.value)}</span>}
+            <span className="ff-port-label">i</span>
+            <Handle type="source" position={Position.Right} id="i" style={{ background: getPortColor("INT") }} />
           </div>
-        </div>
-        <div className="ff-port-row">
-          <div className="ff-port ff-port-input">
-            <Handle type="target" position={Position.Left} id="PV" style={{ background: getPortColor("INT") }} />
-            <span className="ff-port-label">PV</span>
-            {pvVar && <span className={valueClass("INT", pvVar.value)}>{String(pvVar.value)}</span>}
-          </div>
-          <div className="ff-port ff-port-output" />
         </div>
       </div>
     </div>

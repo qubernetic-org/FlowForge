@@ -1,0 +1,704 @@
+import React, { useState } from 'react';
+import { 
+  Play, 
+  Pause, 
+  SkipForward, 
+  Upload, 
+  Download, 
+  Zap, 
+  Search, 
+  MousePointer2, 
+  Layers, 
+  Box, 
+  Tag, 
+  Eye, 
+  ChevronRight, 
+  ChevronDown, 
+  X, 
+  Plus, 
+  User, 
+  Settings, 
+  Activity, 
+  ArrowRight,
+  Maximize2
+} from 'lucide-react';
+
+interface NodeProps {
+  title: string;
+  color: string;
+  inputs?: string[];
+  outputs?: string[];
+  style?: React.CSSProperties;
+  icon?: React.ReactNode;
+  type?: 'event' | 'action' | 'logic' | 'data';
+}
+
+const Node: React.FC<NodeProps> = ({ title, color, inputs = [], outputs = [], style, icon, type = 'action' }) => {
+  return (
+    <div className={`node node-${type}`} style={{ ...style, borderColor: color }}>
+      <div className="node-header" style={{ backgroundColor: type === 'event' ? color : 'transparent' }}>
+        {icon && <span className="node-icon">{icon}</span>}
+        <span className="node-title">{title}</span>
+      </div>
+      <div className="node-content">
+        {inputs.map((input, i) => (
+          <div key={i} className="node-port input">
+            <div className="port-dot" style={{ backgroundColor: color }}></div>
+            <span>{input}</span>
+          </div>
+        ))}
+        {outputs.map((output, i) => (
+          <div key={i} className="node-port output">
+            <span>{output}</span>
+            <div className="port-dot" style={{ backgroundColor: color }}></div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+};
+
+const SidebarItem = ({ label, icon: Icon, color, expanded = false, children }: any) => {
+  const [isOpen, setIsOpen] = useState(expanded);
+  return (
+    <div className="sidebar-item-container">
+      <div className="sidebar-item" onClick={() => setIsOpen(!isOpen)}>
+        <div className="sidebar-item-left">
+          <ChevronRight size={14} className={`chevron ${isOpen ? 'open' : ''}`} />
+          {Icon && <Icon size={14} color={color} fill={color} style={{ opacity: 0.8 }} />}
+          <span className="sidebar-item-label">{label}</span>
+        </div>
+        <X size={14} className="sidebar-item-close" />
+      </div>
+      {isOpen && children && <div className="sidebar-item-children">{children}</div>}
+    </div>
+  );
+};
+
+const App: React.FC = () => {
+  return (
+    <div className="editor-container">
+      {/* Top Toolbar */}
+      <header className="top-toolbar">
+        <div className="toolbar-center">
+          <div className="btn-group">
+            <button className="tool-btn active"><Play size={16} fill="currentColor" /></button>
+            <button className="tool-btn"><Pause size={16} fill="currentColor" /></button>
+            <button className="tool-btn"><SkipForward size={16} fill="currentColor" /></button>
+          </div>
+          <div className="btn-group">
+            <button className="tool-btn"><Upload size={16} /></button>
+            <button className="tool-btn"><Download size={16} /></button>
+            <button className="tool-btn"><Zap size={16} fill="#FFD700" color="#FFD700" /></button>
+          </div>
+        </div>
+      </header>
+
+      <div className="main-layout">
+        {/* Left Sidebar */}
+        <aside className="sidebar">
+          <div className="sidebar-section">
+            <div className="section-header">Class</div>
+            <div className="class-info">
+              <div className="class-icon-box">
+                <User size={24} />
+              </div>
+              <div className="class-details">
+                <div className="class-name">Player</div>
+                <div className="class-desc">Handles movement and health</div>
+              </div>
+            </div>
+            
+            <div className="property-row">
+              <label>Scope</label>
+              <select><option>Object</option></select>
+            </div>
+            <div className="property-row">
+              <label>Category</label>
+              <select><option>Game/Characters</option></select>
+            </div>
+
+            <div className="add-buttons-grid">
+              <button className="add-btn"><Zap size={12} color="#4CAF50" /> Flow +</button>
+              <button className="add-btn"><Activity size={12} color="#FFC107" /> State +</button>
+              <button className="add-btn"><Zap size={12} color="#FFEB3B" /> Event +</button>
+              <button className="add-btn"><div className="dot blue" /> Float +</button>
+              <button className="add-btn"><div className="dot orange" /> String +</button>
+              <button className="add-btn"><div className="dot red" /> Vector +</button>
+            </div>
+
+            <div className="sidebar-list">
+              <SidebarItem label="Movement" icon={Zap} color="#4CAF50" />
+              <SidebarItem label="Health" icon={Activity} color="#FFC107" expanded={true}>
+                <div className="nested-props">
+                  <div className="property-row">
+                    <label>Type</label>
+                    <select><option>Float</option></select>
+                  </div>
+                  <div className="property-row">
+                    <label>Public</label>
+                    <input type="checkbox" checked readOnly />
+                  </div>
+                  <div className="property-row">
+                    <label>Inspectable</label>
+                    <input type="checkbox" checked readOnly />
+                  </div>
+                  <div className="property-row">
+                    <label>Sync Frequency</label>
+                    <div className="slider-container">
+                      <input type="range" />
+                      <span>250ms</span>
+                    </div>
+                  </div>
+                </div>
+              </SidebarItem>
+              <SidebarItem label="Damage" icon={Zap} color="#4CAF50" />
+              <SidebarItem label="Name" icon={Activity} color="#FF9800" />
+              <SidebarItem label="Speed" icon={Activity} color="#2196F3" />
+              <SidebarItem label="On Hit" icon={Zap} color="#FFEB3B" />
+            </div>
+          </div>
+        </aside>
+
+        {/* Main Graph Area */}
+        <main className="graph-area">
+          <div className="graph-header">
+            <div className="graph-tabs">
+              <div className="tab active">Graph</div>
+            </div>
+            <div className="graph-breadcrumb">
+              <ChevronDown size={14} /> <User size={12} /> Player <ChevronRight size={12} /> <Zap size={12} /> Damage
+            </div>
+            <div className="graph-controls">
+              <div className="zoom-control">
+                <span>Zoom</span>
+                <input type="range" />
+                <span>1x</span>
+              </div>
+              <div className="graph-tools">
+                <Search size={14} />
+                <MousePointer2 size={14} />
+                <Layers size={14} />
+                <Box size={14} />
+                <Tag size={14} />
+                <Eye size={14} />
+              </div>
+            </div>
+          </div>
+
+          <div className="canvas">
+            <div className="grid-background"></div>
+            
+            {/* Nodes Recreated from Image */}
+            <Node 
+              title="On Collision Enter" 
+              color="#8BC34A" 
+              type="event"
+              outputs={['Collider', 'Force', 'Contact']}
+              style={{ top: '50px', right: '100px' }}
+              icon={<Zap size={14} />}
+            />
+
+            <Node 
+              title="Branch" 
+              color="#9C27B0" 
+              type="logic"
+              inputs={['']}
+              outputs={['True', 'False']}
+              style={{ top: '200px', right: '100px' }}
+            />
+
+            <Node 
+              title="Instantiate" 
+              color="#03A9F4" 
+              inputs={['Original', 'Position', 'Rotation']}
+              style={{ top: '350px', right: '130px' }}
+              icon={<Box size={14} />}
+            />
+
+            <Node 
+              title="Set Health" 
+              color="#E91E63" 
+              inputs={['']}
+              style={{ top: '550px', right: '150px' }}
+              icon={<User size={14} />}
+            />
+
+            <div className="simple-node" style={{ top: '200px', left: '350px' }}>
+              <div className="port-dot" style={{ backgroundColor: '#8BC34A' }}></div>
+              <span>Collider</span>
+              <div className="port-dot" style={{ backgroundColor: '#8BC34A' }}></div>
+            </div>
+
+            <div className="simple-node" style={{ top: '200px', left: '500px', backgroundColor: '#222' }}>
+              <Box size={12} color="#03A9F4" />
+              <span>Get Tag</span>
+              <div className="port-dot" style={{ backgroundColor: '#FF9800' }}></div>
+            </div>
+
+            {/* Connections (Simplified SVG) */}
+            <svg className="connections-layer">
+              <path d="M 800 150 L 800 200" stroke="white" strokeWidth="2" fill="none" markerEnd="url(#arrow)" />
+              <path d="M 800 280 L 750 350" stroke="white" strokeWidth="2" fill="none" markerEnd="url(#arrow)" />
+              <path d="M 750 480 L 750 550" stroke="white" strokeWidth="2" fill="none" markerEnd="url(#arrow)" />
+              <defs>
+                <marker id="arrow" markerWidth="10" markerHeight="10" refX="5" refY="5" orient="auto">
+                  <path d="M 0 0 L 10 5 L 0 10 z" fill="white" />
+                </marker>
+              </defs>
+            </svg>
+          </div>
+
+          {/* Script Preview Panel */}
+          <div className="script-preview">
+            <div className="panel-header">
+              <span>Script Preview</span>
+              <div className="breadcrumb">
+                <ChevronDown size={12} /> <User size={10} /> Player <ChevronRight size={10} /> <Zap size={10} /> Damage
+              </div>
+            </div>
+            <div className="code-editor">
+              <div className="line-numbers">
+                {Array.from({ length: 11 }).map((_, i) => <div key={i}>{i + 1}</div>)}
+              </div>
+              <pre>
+                <code>
+                  <span className="keyword">float</span> health;<br/>
+                  <span className="type">GameObject</span> explosion;<br/>
+                  <br/>
+                  <span className="keyword">void</span> OnCollisionEnter(<span className="type">CollisionEventArgs</span> e)<br/>
+                  {'{'}<br/>
+                  &nbsp;&nbsp;<span className="keyword">if</span> (e.collider.tag == <span className="string">"Enemy"</span>)<br/>
+                  &nbsp;&nbsp;{'{'}<br/>
+                  <span className="highlight">
+                  &nbsp;&nbsp;&nbsp;&nbsp;<span className="type">GameObject</span>.Instantiate(explosion, e.contact, <span className="type">Quaternion</span>.identity);<br/>
+                  &nbsp;&nbsp;&nbsp;&nbsp;health = health - e.force.magnitude;
+                  </span><br/>
+                  &nbsp;&nbsp;{'}'}<br/>
+                  {'}'}
+                </code>
+              </pre>
+            </div>
+          </div>
+        </main>
+      </div>
+
+      <style>{`
+        :root {
+          --bg-dark: #1a1a1a;
+          --bg-sidebar: #252525;
+          --bg-header: #333333;
+          --border-color: #444;
+          --text-main: #e0e0e0;
+          --text-dim: #999;
+          --accent-blue: #2196F3;
+        }
+
+        body {
+          margin: 0;
+          padding: 0;
+          font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+          background-color: var(--bg-dark);
+          color: var(--text-main);
+          overflow: hidden;
+        }
+
+        .editor-container {
+          display: flex;
+          flex-direction: column;
+          height: 100vh;
+          width: 100vw;
+        }
+
+        .top-toolbar {
+          height: 48px;
+          background: var(--bg-header);
+          border-bottom: 1px solid var(--border-color);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          padding: 0 16px;
+        }
+
+        .toolbar-center {
+          display: flex;
+          gap: 20px;
+        }
+
+        .btn-group {
+          display: flex;
+          background: #222;
+          border-radius: 4px;
+          padding: 2px;
+          border: 1px solid #444;
+        }
+
+        .tool-btn {
+          background: transparent;
+          border: none;
+          color: #ccc;
+          padding: 4px 12px;
+          cursor: pointer;
+          display: flex;
+          align-items: center;
+          border-radius: 2px;
+        }
+
+        .tool-btn:hover {
+          background: #444;
+        }
+
+        .tool-btn.active {
+          color: var(--accent-blue);
+        }
+
+        .main-layout {
+          display: flex;
+          flex: 1;
+          overflow: hidden;
+        }
+
+        .sidebar {
+          width: 300px;
+          background: var(--bg-sidebar);
+          border-right: 1px solid var(--border-color);
+          display: flex;
+          flex-direction: column;
+          overflow-y: auto;
+        }
+
+        .sidebar-section {
+          padding: 12px;
+        }
+
+        .section-header {
+          font-size: 11px;
+          text-transform: uppercase;
+          color: var(--text-dim);
+          margin-bottom: 12px;
+        }
+
+        .class-info {
+          display: flex;
+          gap: 12px;
+          background: #333;
+          padding: 8px;
+          border-radius: 4px;
+          margin-bottom: 16px;
+        }
+
+        .class-icon-box {
+          width: 40px;
+          height: 40px;
+          background: #444;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          border-radius: 4px;
+        }
+
+        .class-name {
+          font-weight: bold;
+          font-size: 14px;
+        }
+
+        .class-desc {
+          font-size: 12px;
+          color: var(--text-dim);
+        }
+
+        .property-row {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          margin-bottom: 8px;
+          font-size: 12px;
+        }
+
+        .property-row label {
+          color: var(--text-dim);
+        }
+
+        .property-row select {
+          background: #111;
+          border: 1px solid #444;
+          color: white;
+          padding: 2px 8px;
+          border-radius: 3px;
+          width: 140px;
+        }
+
+        .add-buttons-grid {
+          display: grid;
+          grid-template-columns: 1fr 1fr 1fr;
+          gap: 4px;
+          margin: 16px 0;
+        }
+
+        .add-btn {
+          background: #333;
+          border: 1px solid #444;
+          color: #eee;
+          font-size: 10px;
+          padding: 4px;
+          border-radius: 3px;
+          display: flex;
+          align-items: center;
+          gap: 4px;
+          cursor: pointer;
+        }
+
+        .dot {
+          width: 8px;
+          height: 8px;
+          border-radius: 50%;
+        }
+        .dot.blue { background: #2196F3; }
+        .dot.orange { background: #FF9800; }
+        .dot.red { background: #F44336; }
+
+        .sidebar-item {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          padding: 6px 4px;
+          background: #333;
+          margin-bottom: 2px;
+          border-radius: 3px;
+          cursor: pointer;
+        }
+
+        .sidebar-item-left {
+          display: flex;
+          align-items: center;
+          gap: 8px;
+          font-size: 12px;
+        }
+
+        .chevron {
+          transition: transform 0.2s;
+        }
+        .chevron.open {
+          transform: rotate(90deg);
+        }
+
+        .nested-props {
+          padding: 8px 8px 8px 24px;
+          background: #2a2a2a;
+          border-radius: 0 0 4px 4px;
+          margin-bottom: 8px;
+        }
+
+        .graph-area {
+          flex: 1;
+          display: flex;
+          flex-direction: column;
+          position: relative;
+          background: #111;
+        }
+
+        .graph-header {
+          height: 40px;
+          background: #222;
+          border-bottom: 1px solid #333;
+          display: flex;
+          align-items: center;
+          padding: 0 12px;
+          justify-content: space-between;
+        }
+
+        .graph-tabs {
+          display: flex;
+          height: 100%;
+        }
+
+        .tab {
+          padding: 0 16px;
+          display: flex;
+          align-items: center;
+          font-size: 12px;
+          background: #333;
+          border-right: 1px solid #444;
+        }
+
+        .graph-breadcrumb {
+          font-size: 12px;
+          color: #aaa;
+          display: flex;
+          align-items: center;
+          gap: 6px;
+        }
+
+        .graph-controls {
+          display: flex;
+          align-items: center;
+          gap: 16px;
+        }
+
+        .zoom-control {
+          display: flex;
+          align-items: center;
+          gap: 8px;
+          font-size: 11px;
+          color: #888;
+        }
+
+        .graph-tools {
+          display: flex;
+          gap: 12px;
+          color: #888;
+        }
+
+        .canvas {
+          flex: 1;
+          position: relative;
+          overflow: hidden;
+        }
+
+        .grid-background {
+          position: absolute;
+          top: 0;
+          left: 0;
+          right: 0;
+          bottom: 0;
+          background-image: 
+            linear-gradient(to right, #222 1px, transparent 1px),
+            linear-gradient(to bottom, #222 1px, transparent 1px);
+          background-size: 40px 40px;
+        }
+
+        .node {
+          position: absolute;
+          width: 180px;
+          background: rgba(30, 30, 30, 0.95);
+          border: 1px solid #555;
+          border-radius: 6px;
+          box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+          z-index: 10;
+        }
+
+        .node-header {
+          padding: 6px 10px;
+          border-bottom: 1px solid rgba(255,255,255,0.1);
+          display: flex;
+          align-items: center;
+          gap: 8px;
+          font-size: 12px;
+          font-weight: bold;
+          border-radius: 5px 5px 0 0;
+        }
+
+        .node-content {
+          padding: 8px 0;
+        }
+
+        .node-port {
+          display: flex;
+          align-items: center;
+          padding: 4px 10px;
+          font-size: 11px;
+          gap: 8px;
+        }
+
+        .node-port.output {
+          justify-content: flex-end;
+        }
+
+        .port-dot {
+          width: 10px;
+          height: 10px;
+          border-radius: 50%;
+          border: 2px solid rgba(255,255,255,0.2);
+        }
+
+        .simple-node {
+          position: absolute;
+          display: flex;
+          align-items: center;
+          gap: 8px;
+          background: #333;
+          padding: 4px 10px;
+          border-radius: 20px;
+          font-size: 12px;
+          border: 1px solid #555;
+        }
+
+        .connections-layer {
+          position: absolute;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 100%;
+          pointer-events: none;
+        }
+
+        .script-preview {
+          height: 250px;
+          background: #1e1e1e;
+          border-top: 2px solid #333;
+          display: flex;
+          flex-direction: column;
+        }
+
+        .panel-header {
+          padding: 8px 12px;
+          background: #252525;
+          font-size: 12px;
+          display: flex;
+          justify-content: space-between;
+          border-bottom: 1px solid #333;
+        }
+
+        .code-editor {
+          flex: 1;
+          display: flex;
+          font-family: 'Courier New', Courier, monospace;
+          font-size: 13px;
+          overflow-y: auto;
+        }
+
+        .line-numbers {
+          width: 40px;
+          background: #1a1a1a;
+          color: #555;
+          text-align: right;
+          padding: 12px 8px;
+          user-select: none;
+        }
+
+        .code-editor pre {
+          margin: 0;
+          padding: 12px;
+          color: #d4d4d4;
+        }
+
+        .keyword { color: #569cd6; }
+        .type { color: #4ec9b0; }
+        .string { color: #ce9178; }
+        .highlight {
+          background: rgba(33, 150, 243, 0.2);
+          display: inline-block;
+          width: 100%;
+        }
+
+        input[type="range"] {
+          height: 4px;
+          background: #444;
+          border-radius: 2px;
+          appearance: none;
+        }
+
+        input[type="range"]::-webkit-slider-thumb {
+          appearance: none;
+          width: 12px;
+          height: 12px;
+          background: #888;
+          border-radius: 50%;
+          cursor: pointer;
+        }
+      `}</style>
+    </div>
+  );
+};
+
+export default App;

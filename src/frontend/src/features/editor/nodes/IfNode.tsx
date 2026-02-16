@@ -5,7 +5,7 @@ import { Handle, Position } from "@xyflow/react";
 import type { NodeOnlineData } from "../../../api/types";
 import { getPortColor } from "../utils/portColors";
 
-interface TimerNodeData {
+interface IfNodeData {
   label?: string;
   executionOrder?: number;
   onlineData?: NodeOnlineData;
@@ -22,20 +22,19 @@ function valueClass(dataType: string, value: unknown): string {
   return base;
 }
 
-export function TimerNode({ data }: { data: TimerNodeData }) {
+export function IfNode({ data }: { data: IfNodeData }) {
   const execState = data.onlineData?.executionState ?? "idle";
   const execColor = execState === "active" ? "#ffffff" : getPortColor("EXEC");
-  const inVar = findVar(data.onlineData, ".IN");
-  const ptVar = findVar(data.onlineData, ".PT");
-  const qVar = findVar(data.onlineData, ".Q");
-  const etVar = findVar(data.onlineData, ".ET");
+  const condVar = findVar(data.onlineData, ".COND");
+  const trueColor = execState === "active" && condVar?.value === true ? "#ffffff" : getPortColor("EXEC");
+  const falseColor = execState === "active" && condVar?.value === false ? "#ffffff" : getPortColor("EXEC");
 
   return (
-    <div className={`ff-node ff-node-timer ff-exec-${execState}`}>
+    <div className={`ff-node ff-node-if ff-exec-${execState}`}>
       <div className="ff-node-header">
         <div className="ff-node-header-info">
-          <span className="ff-node-label">{data.label ?? "Timer"}</span>
-          <span className="ff-node-type-path">FB · Tc2_Standard.TON</span>
+          <span className="ff-node-label">{data.label ?? "IF"}</span>
+          <span className="ff-node-type-path">INSTR · IF</span>
         </div>
         {data.executionOrder != null && (
           <span className="ff-node-exec-order">#{data.executionOrder}</span>
@@ -54,26 +53,20 @@ export function TimerNode({ data }: { data: TimerNodeData }) {
         </div>
         <div className="ff-port-row">
           <div className="ff-port ff-port-input">
-            <Handle type="target" position={Position.Left} id="IN" style={{ background: getPortColor("BOOL") }} />
-            <span className="ff-port-label">IN</span>
-            {inVar && <span className={valueClass("BOOL", inVar.value)}>{String(inVar.value)}</span>}
+            <Handle type="target" position={Position.Left} id="COND" style={{ background: getPortColor("BOOL") }} />
+            <span className="ff-port-label">COND</span>
+            {condVar && <span className={valueClass("BOOL", condVar.value)}>{String(condVar.value)}</span>}
           </div>
           <div className="ff-port ff-port-output">
-            {qVar && <span className={valueClass("BOOL", qVar.value)}>{String(qVar.value)}</span>}
-            <span className="ff-port-label">Q</span>
-            <Handle type="source" position={Position.Right} id="Q" style={{ background: getPortColor("BOOL") }} />
+            <span className="ff-port-label" style={{ color: "#999" }}>TRUE</span>
+            <Handle type="source" position={Position.Right} id="TRUE" style={{ background: trueColor }} />
           </div>
         </div>
         <div className="ff-port-row">
-          <div className="ff-port ff-port-input">
-            <Handle type="target" position={Position.Left} id="PT" style={{ background: getPortColor("TIME") }} />
-            <span className="ff-port-label">PT</span>
-            {ptVar && <span className={valueClass("TIME", ptVar.value)}>{String(ptVar.value)}</span>}
-          </div>
+          <div className="ff-port ff-port-input" />
           <div className="ff-port ff-port-output">
-            {etVar && <span className={valueClass("TIME", etVar.value)}>{String(etVar.value)}</span>}
-            <span className="ff-port-label">ET</span>
-            <Handle type="source" position={Position.Right} id="ET" style={{ background: getPortColor("TIME") }} />
+            <span className="ff-port-label" style={{ color: "#999" }}>FALSE</span>
+            <Handle type="source" position={Position.Right} id="FALSE" style={{ background: falseColor }} />
           </div>
         </div>
       </div>

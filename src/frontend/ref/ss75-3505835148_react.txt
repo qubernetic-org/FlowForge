@@ -1,0 +1,358 @@
+import React from 'react';
+import { RefreshCw, CircleDot, ArrowUpRight, ChevronRight, Play, Settings2, Square } from 'lucide-react';
+
+interface PortProps {
+  type: 'exec' | 'data';
+  direction: 'input' | 'output';
+  color?: string;
+  label?: string;
+}
+
+const Port = ({ type, direction, color = '#fff', label }: PortProps) => {
+  const isExec = type === 'exec';
+  return (
+    <div className={`port-container ${direction}`}>
+      {direction === 'input' && label && <span className="port-label">{label}</span>}
+      <div className={`port ${type}`} style={{ borderColor: isExec ? 'transparent' : color, backgroundColor: isExec ? 'transparent' : 'transparent' }}>
+        {isExec ? (
+          <ChevronRight size={14} color={color} strokeWidth={3} />
+        ) : (
+          <div className="port-circle" style={{ backgroundColor: color }} />
+        )}
+      </div>
+      {direction === 'output' && label && <span className="port-label">{label}</span>}
+    </div>
+  );
+};
+
+interface NodeProps {
+  title: string;
+  subtitle?: string;
+  headerColor?: string;
+  isSelected?: boolean;
+  icon?: React.ReactNode;
+  children?: React.ReactNode;
+  style?: React.CSSProperties;
+}
+
+const Node = ({ title, subtitle, headerColor = '#3f3f3f', isSelected, icon, children, style }: NodeProps) => {
+  return (
+    <div className={`node ${isSelected ? 'selected' : ''}`} style={style}>
+      <div className="node-header" style={{ backgroundColor: headerColor }}>
+        <div className="node-icon">{icon}</div>
+        <div className="node-title-area">
+          <div className="node-title">{title}</div>
+          {subtitle && <div className="node-subtitle">{subtitle}</div>}
+        </div>
+      </div>
+      <div className="node-content">
+        {children}
+      </div>
+    </div>
+  );
+};
+
+const VisualNodeEditor = () => {
+  return (
+    <div className="canvas">
+      {/* SVG Layer for Connections */}
+      <svg className="connections-layer">
+        <defs>
+          <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="0" refY="3.5" orient="auto">
+            <polygon points="0 0, 10 3.5, 0 7" fill="white" />
+          </marker>
+        </defs>
+        
+        {/* Execution Line: On Update -> Set Velocity */}
+        <line x1="220" y1="115" x2="770" y2="115" stroke="white" strokeWidth="2" markerEnd="url(#arrowhead)" />
+        
+        {/* Data Line: Get Velocity -> Expose (Curved) */}
+        <path d="M 220 445 C 260 445, 260 385, 300 385" stroke="#2dd4bf" strokeWidth="2" fill="none" />
+        
+        {/* Data Line: Expose -> Create (Curved) */}
+        <path d="M 500 410 C 530 410, 530 410, 560 410" stroke="#60a5fa" strokeWidth="2" fill="none" />
+        
+        {/* Data Line: Create -> Set Velocity (Curved) */}
+        <path d="M 710 340 C 750 340, 750 240, 780 240" stroke="#2dd4bf" strokeWidth="2" fill="none" />
+      </svg>
+
+      {/* Nodes */}
+      
+      {/* Node 1: On Update */}
+      <Node 
+        title="On Update" 
+        subtitle="Event" 
+        headerColor="#65a30d" 
+        icon={<RefreshCw size={18} />}
+        style={{ left: 60, top: 50, width: 160 }}
+      >
+        <div className="node-row justify-end">
+          <Port type="exec" direction="output" color="#84cc16" />
+        </div>
+      </Node>
+
+      {/* Node 2: Get Velocity */}
+      <Node 
+        title="Rigidbody 2D" 
+        subtitle="Get Velocity" 
+        icon={<CircleDot size={18} color="#84cc16" />}
+        style={{ left: 60, top: 350, width: 160 }}
+      >
+        <div className="node-row">
+          <div className="input-group">
+            <CircleDot size={14} color="#84cc16" />
+            <select className="node-select"><option>This</option></select>
+            <Settings2 size={12} className="icon-dim" />
+          </div>
+          <div className="flex-column align-end">
+            <Port type="data" direction="output" color="#2dd4bf" />
+          </div>
+        </div>
+      </Node>
+
+      {/* Node 3: Expose Vector 2 */}
+      <Node 
+        title="Expose" 
+        subtitle="Vector 2" 
+        icon={<ArrowUpRight size={18} color="#f97316" />}
+        style={{ left: 300, top: 250, width: 200 }}
+      >
+        <div className="node-padding">
+          <div className="checkbox-row"><Square size={12} className="check-box" /> Instance</div>
+          <div className="checkbox-row"><Square size={12} className="check-box" /> Static</div>
+        </div>
+        <div className="node-divider" />
+        <div className="node-row">
+          <Port type="data" direction="input" color="#2dd4bf" />
+          <div className="flex-column align-end full-width">
+            <div className="port-row"><span className="label-dim">X</span> <Port type="data" direction="output" color="#60a5fa" /></div>
+            <div className="port-row"><span className="label-dim">Y</span> <Port type="data" direction="output" color="#60a5fa" /></div>
+            <div className="port-row"><span className="label-dim">Normalized</span> <Port type="data" direction="output" color="#f97316" /></div>
+            <div className="port-row"><span className="label-dim">Magnitude</span> <Port type="data" direction="output" color="#60a5fa" /></div>
+            <div className="port-row"><span className="label-dim">Sqr Magnitude</span> <Port type="data" direction="output" color="#60a5fa" /></div>
+          </div>
+        </div>
+      </Node>
+
+      {/* Node 4: Vector 2 Create */}
+      <Node 
+        title="Vector 2" 
+        subtitle="Create" 
+        icon={<ArrowUpRight size={18} color="#f97316" />}
+        style={{ left: 560, top: 280, width: 150 }}
+      >
+        <div className="node-row">
+          <div className="flex-column">
+            <div className="port-row"><Port type="exec" direction="input" color="#fff" /></div>
+            <div className="port-row"><Port type="data" direction="input" color="#60a5fa" /> <span className="label-dim">X</span> <input className="node-input" defaultValue="0" /></div>
+            <div className="port-row"><Port type="data" direction="input" color="#60a5fa" /> <span className="label-dim">Y</span></div>
+          </div>
+          <div className="flex-column align-end">
+            <div className="port-row"><Port type="exec" direction="output" color="#fff" /></div>
+            <div className="port-row"><Port type="data" direction="output" color="#2dd4bf" /></div>
+          </div>
+        </div>
+      </Node>
+
+      {/* Node 5: Set Velocity (Selected) */}
+      <Node 
+        title="Rigidbody 2D" 
+        subtitle="Set Velocity" 
+        isSelected={true}
+        icon={<CircleDot size={18} color="#84cc16" />}
+        style={{ left: 780, top: 50, width: 180 }}
+      >
+        <div className="node-row">
+          <div className="flex-column">
+            <div className="port-row"><Port type="exec" direction="input" color="#fff" /></div>
+            <div className="input-group mt-4">
+              <CircleDot size={14} color="#84cc16" />
+              <select className="node-select"><option>This</option></select>
+              <Settings2 size={12} className="icon-dim" />
+            </div>
+          </div>
+          <div className="flex-column align-end">
+            <div className="port-row"><Port type="exec" direction="output" color="#fff" /></div>
+            <div className="port-row"><Port type="data" direction="input" color="#2dd4bf" /></div>
+          </div>
+        </div>
+      </Node>
+
+      <style>{`
+        .canvas {
+          width: 100%;
+          height: 600px;
+          background-color: #1a1a1a;
+          position: relative;
+          overflow: hidden;
+          font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+          color: #e5e5e5;
+        }
+
+        .connections-layer {
+          position: absolute;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 100%;
+          pointer-events: none;
+          z-index: 0;
+        }
+
+        .node {
+          position: absolute;
+          background-color: #262626;
+          border-radius: 4px;
+          box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+          z-index: 1;
+          border: 1px solid #333;
+          overflow: hidden;
+          font-size: 12px;
+        }
+
+        .node.selected {
+          border: 1px solid #3b82f6;
+          box-shadow: 0 0 0 1px #3b82f6, 0 4px 15px rgba(0,0,0,0.5);
+        }
+
+        .node-header {
+          display: flex;
+          align-items: center;
+          padding: 6px 10px;
+          gap: 8px;
+          border-bottom: 1px solid rgba(0,0,0,0.2);
+        }
+
+        .node-title-area {
+          display: flex;
+          flex-direction: column;
+        }
+
+        .node-title {
+          font-weight: 600;
+          font-size: 11px;
+          opacity: 0.9;
+        }
+
+        .node-subtitle {
+          font-size: 13px;
+          font-weight: 500;
+        }
+
+        .node-content {
+          padding: 8px 0;
+        }
+
+        .node-padding {
+          padding: 0 12px;
+        }
+
+        .node-row {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          padding: 4px 10px;
+          min-height: 24px;
+        }
+
+        .port-row {
+          display: flex;
+          align-items: center;
+          gap: 6px;
+          margin-bottom: 4px;
+        }
+
+        .justify-end { justify-content: flex-end; }
+        .align-end { align-items: flex-end; }
+        .flex-column { display: flex; flex-direction: column; }
+        .full-width { width: 100%; }
+        .mt-4 { margin-top: 4px; }
+
+        .port-container {
+          display: flex;
+          align-items: center;
+          gap: 6px;
+        }
+
+        .port {
+          width: 14px;
+          height: 14px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+        }
+
+        .port.data .port-circle {
+          width: 8px;
+          height: 8px;
+          border-radius: 50%;
+        }
+
+        .port-label {
+          font-size: 11px;
+          color: #a3a3a3;
+        }
+
+        .label-dim {
+          color: #737373;
+          font-size: 11px;
+        }
+
+        .node-select {
+          background: #171717;
+          border: 1px solid #404040;
+          color: #a3a3a3;
+          font-size: 11px;
+          padding: 2px 4px;
+          border-radius: 2px;
+          outline: none;
+        }
+
+        .node-input {
+          background: #171717;
+          border: 1px solid #404040;
+          color: #e5e5e5;
+          font-size: 11px;
+          width: 24px;
+          padding: 2px;
+          text-align: center;
+          border-radius: 2px;
+        }
+
+        .input-group {
+          display: flex;
+          align-items: center;
+          gap: 4px;
+          background: #171717;
+          padding: 2px 6px;
+          border-radius: 4px;
+          border: 1px solid #404040;
+        }
+
+        .icon-dim {
+          color: #737373;
+        }
+
+        .checkbox-row {
+          display: flex;
+          align-items: center;
+          gap: 8px;
+          color: #a3a3a3;
+          margin-bottom: 4px;
+        }
+
+        .check-box {
+          color: #404040;
+        }
+
+        .node-divider {
+          height: 1px;
+          background: #333;
+          margin: 8px 0;
+        }
+      `}</style>
+    </div>
+  );
+};
+
+export default VisualNodeEditor;
