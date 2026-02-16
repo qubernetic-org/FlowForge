@@ -9,15 +9,17 @@ import type { FlowNode } from "../../../api/types";
  */
 const nodePortMap: Record<string, string[]> = {
   entry: [],
-  input: ["OUT"],
-  output: ["IN"],
+  varRead: ["VALUE"],
+  varWrite: ["VALUE"],
   timer: ["IN", "PT", "Q", "ET"],
   counter: ["CU", "RESET", "PV", "Q", "CV"],
   comparison: ["A", "B", "OUT"],
   if: ["COND"],
   for: ["FROM", "TO", "i"],
-  methodCall: ["Cycles", "Temp", "RET"],
+  methodCall: ["Cycles", "Temp", "RETURN"],
   methodEntry: ["Cycles", "Temp"],
+  return: ["RETURN"],
+  propertyEntry: ["VALUE"],
 };
 
 /**

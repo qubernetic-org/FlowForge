@@ -34,7 +34,7 @@ export function ForNode({ data }: { data: ForNodeData }) {
       <div className="ff-node-header">
         <div className="ff-node-header-info">
           <span className="ff-node-label">{data.label ?? "FOR"}</span>
-          <span className="ff-node-type-path">CTRL · FOR</span>
+          <span className="ff-node-type-path">INSTR · FOR</span>
         </div>
         {data.executionOrder != null && (
           <span className="ff-node-exec-order">#{data.executionOrder}</span>

@@ -27,7 +27,7 @@ export function MethodCallNode({ data }: { data: MethodCallNodeData }) {
   const execColor = execState === "active" ? "#ffffff" : getPortColor("EXEC");
   const cyclesVar = findVar(data.onlineData, ".Cycles");
   const tempVar = findVar(data.onlineData, ".Temp");
-  const retVar = findVar(data.onlineData, ".RET");
+  const retVar = findVar(data.onlineData, ".RETURN");
   const label = data.label ?? "MethodCall";
 
   return (
@@ -60,8 +60,8 @@ export function MethodCallNode({ data }: { data: MethodCallNodeData }) {
           </div>
           <div className="ff-port ff-port-output">
             {retVar && <span className={valueClass("BOOL", retVar.value)}>{String(retVar.value)}</span>}
-            <span className="ff-port-label">RET</span>
-            <Handle type="source" position={Position.Right} id="RET" style={{ background: getPortColor("BOOL") }} />
+            <span className="ff-port-label">RETURN</span>
+            <Handle type="source" position={Position.Right} id="RETURN" style={{ background: getPortColor("BOOL") }} />
           </div>
         </div>
         <div className="ff-port-row">

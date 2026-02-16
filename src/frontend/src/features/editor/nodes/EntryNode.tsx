@@ -7,7 +7,6 @@ import { getPortColor } from "../utils/portColors";
 
 interface EntryNodeData {
   label?: string;
-  typePath?: string;
   executionOrder?: number;
   onlineData?: NodeOnlineData;
   [key: string]: unknown;
@@ -20,8 +19,8 @@ export function EntryNode({ data }: { data: EntryNodeData }) {
     <div className={`ff-node ff-node-entry ff-exec-${execState}`}>
       <div className="ff-node-header">
         <div className="ff-node-header-info">
-          <span className="ff-node-label">{data.label ?? "Execution Entry"}</span>
-          <span className="ff-node-type-path">{data.typePath ?? "PRG · MAIN"}</span>
+          <span className="ff-node-label">{data.label ?? "MAIN"}</span>
+          <span className="ff-node-type-path">Execution Entry · PRG</span>
         </div>
         {data.executionOrder != null && (
           <span className="ff-node-exec-order">#{data.executionOrder}</span>

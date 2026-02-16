@@ -62,6 +62,7 @@ export function GroupNode({ data }: { data: GroupNodeData }) {
         border: `1.5px dashed ${color}40`,
         borderRadius: 10,
         position: "relative",
+        pointerEvents: "none",
       }}
     >
       {/* Header — drag handle */}
@@ -74,6 +75,7 @@ export function GroupNode({ data }: { data: GroupNodeData }) {
           padding: "6px 12px",
           cursor: "grab",
           userSelect: "none",
+          pointerEvents: "all",
         }}
       >
         <span
@@ -89,21 +91,6 @@ export function GroupNode({ data }: { data: GroupNodeData }) {
         </span>
       </div>
 
-      {/* Body — blocks node drag and selection */}
-      <div
-        className="nodrag nowheel"
-        onMouseDown={(e) => e.stopPropagation()}
-        onPointerDown={(e) => e.stopPropagation()}
-        style={{
-          position: "absolute",
-          top: 30,
-          left: 0,
-          right: 0,
-          bottom: 0,
-          pointerEvents: "all",
-        }}
-      />
-
       {/* Resize handle bottom-right */}
       <div
         className="ff-group-resize-handle nodrag"
@@ -116,6 +103,7 @@ export function GroupNode({ data }: { data: GroupNodeData }) {
           height: 20,
           cursor: "nwse-resize",
           zIndex: 1,
+          pointerEvents: "all",
         }}
       >
         <svg width="10" height="10" viewBox="0 0 10 10" style={{ position: "absolute", bottom: 4, right: 4 }}>

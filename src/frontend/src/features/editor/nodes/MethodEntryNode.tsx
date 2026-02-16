@@ -34,7 +34,7 @@ export function MethodEntryNode({ data }: { data: MethodEntryNodeData }) {
       <div className="ff-node-header">
         <div className="ff-node-header-info">
           <span className="ff-node-label">{label}</span>
-          <span className="ff-node-type-path">METHOD · {label}</span>
+          <span className="ff-node-type-path">Execution Entry · METHOD</span>
         </div>
         {data.executionOrder != null && (
           <span className="ff-node-exec-order">#{data.executionOrder}</span>
